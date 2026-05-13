@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IA × Dirección de Arte — ESDI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f0ede6;
+  --ink:#0a0a0a;
+  --mid:#888480;
+  --line:#c8c5be;
+  --blue:#0000ff;
+  --serif:'DM Serif Display',Georgia,serif;
+  --mono:'DM Mono',monospace;
+  --sans:'DM Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;overflow-x:hidden}
+
+/* grain */
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");opacity:.035;pointer-events:none;z-index:9999}
+
+/* cursor blink */
+.blink{animation:bk .9s step-end infinite}
+@keyframes bk{50%{opacity:0}}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:800;height:44px;background:var(--paper);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 2rem}
+.nav-id{font-family:var(--mono);font-size:.68rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);text-decoration:none}
+.nav-id span{color:var(--blue)}
+.nav-links{display:flex;list-style:none;gap:0}
+.nav-links a{font-family:var(--mono);font-size:.58rem;color:var(--mid);text-decoration:none;padding:0 .9rem;border-left:1px solid var(--line);line-height:44px;letter-spacing:.1em;text-transform:uppercase;transition:color .12s}
+.nav-links a:hover,.nav-links a.act{color:var(--blue)}
+.nav-links li:first-child a{border-left:none}
+#nav-loc{font-family:var(--mono);font-size:.58rem;color:var(--mid);text-transform:uppercase;letter-spacing:.1em}
+#prog{position:fixed;top:44px;left:0;height:2px;background:var(--blue);width:0;z-index:801;transition:width .06s}
+
+/* ── FULL-BLEED IMAGE SLOTS ── */
+.fullbleed{width:100vw;margin-left:calc(-50vw + 50%);position:relative;overflow:hidden;background:var(--ink)}
+.fullbleed.h50{height:50vh}
+.fullbleed.h70{height:70vh}
+.fullbleed.h80{height:80vh}
+.fullbleed.h100{height:100vh}
+.fullbleed img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.fb-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8rem;border:1px dashed rgba(255,255,255,.12)}
+.fb-label{font-family:var(--mono);font-size:.62rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.14em}
+.fb-sub{font-size:.8rem;color:rgba(255,255,255,.2);max-width:320px;text-align:center;line-height:1.4}
+.fb-corner{position:absolute;font-family:var(--mono);font-size:.58rem;color:rgba(255,255,255,.25);letter-spacing:.08em}
+.fb-corner.tl{top:1.5rem;left:1.5rem}
+.fb-corner.tr{top:1.5rem;right:1.5rem;text-align:right}
+.fb-corner.bl{bottom:1.5rem;left:1.5rem}
+.fb-corner.br{bottom:1.5rem;right:1.5rem;text-align:right}
+
+/* video embed */
+.fullbleed iframe{position:absolute;inset:0;width:100%;height:100%;border:none}
+
+/* caption after fullbleed */
+.fb-caption{display:flex;justify-content:space-between;padding:.6rem 0;border-bottom:1px solid var(--line);margin-bottom:0}
+.fb-cap-l,.fb-cap-r{font-family:var(--mono);font-size:.58rem;color:var(--mid);letter-spacing:.08em;text-transform:uppercase}
+
+/* ── INNER GRIDS ── */
+.img-grid{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);margin:2.5rem 0}
+.ig-2{grid-template-columns:1fr 1fr}
+.ig-3{grid-template-columns:1fr 1fr 1fr}
+.ig-2-1{grid-template-columns:2fr 1fr}
+.img-slot{background:var(--paper);aspect-ratio:4/3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;position:relative;overflow:hidden;cursor:pointer;transition:background .12s}
+.img-slot:hover{background:#e8e5de}
+.img-slot.tall{aspect-ratio:2/3}
+.img-slot.sq{aspect-ratio:1/1}
+.img-slot.vid{aspect-ratio:16/9}
+.img-slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.sl-ico{font-size:1.4rem;opacity:.15}
+.sl-lbl{font-family:var(--mono);font-size:.58rem;color:var(--mid);text-transform:uppercase;letter-spacing:.12em}
+.sl-sub{font-size:.72rem;color:var(--mid);max-width:160px;text-align:center;line-height:1.4}
+
+/* ── SECTION WRAPPER ── */
+.wrap{max-width:1100px;margin:0 auto;padding:0 2.5rem}
+
+/* ── HERO ── */
+#hero{min-height:100vh;padding-top:44px;display:flex;flex-direction:column;border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+.hero-ghost{position:absolute;right:-.04em;bottom:-.1em;font-family:var(--serif);font-size:clamp(160px,24vw,340px);color:transparent;-webkit-text-stroke:1px var(--line);line-height:1;pointer-events:none;user-select:none;white-space:nowrap}
+.hero-inner{flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:5rem 2.5rem 3rem;position:relative}
+.hero-eyebrow{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--mid);margin-bottom:2.5rem}
+.hero-eyebrow span{color:var(--blue)}
+h1.hero-h{font-family:var(--serif);font-size:clamp(4.5rem,11vw,11rem);line-height:.88;letter-spacing:-.02em;font-weight:400;max-width:950px}
+h1.hero-h em{font-style:italic}
+.hero-h .underscore{color:var(--blue)}
+.hero-foot{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--line)}
+.hero-cell{padding:1.5rem 2rem;border-right:1px solid var(--line)}
+.hero-cell:last-child{border-right:none}
+.hc-l{font-family:var(--mono);font-size:.56rem;color:var(--mid);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.3rem}
+.hc-v{font-family:var(--serif);font-size:1.15rem;line-height:1.1}
+.hc-v a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line)}
+.hc-v a:hover{border-color:var(--blue);color:var(--blue)}
+.scroll-arrow{position:absolute;right:2.5rem;bottom:7rem;writing-mode:vertical-rl;font-family:var(--mono);font-size:.56rem;color:var(--mid);letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;gap:.8rem}
+.scroll-arrow::before{content:'';width:1px;height:60px;background:var(--line);animation:sa 2s ease-in-out infinite}
+@keyframes sa{0%,100%{opacity:.3;transform:scaleY(1)}50%{opacity:1;transform:scaleY(1.1)}}
+
+/* ── SESSION BREAKS ── */
+.sess{background:var(--ink);color:var(--paper);padding:1.5rem 2.5rem;border-bottom:1px solid #222;position:sticky;top:44px;z-index:100;display:flex;align-items:baseline;gap:3rem;flex-wrap:wrap}
+.sess-n{font-family:var(--mono);font-size:.58rem;color:rgba(240,237,230,.3);text-transform:uppercase;letter-spacing:.16em;white-space:nowrap;margin-bottom:0}
+.sess h2{font-family:var(--serif);font-size:clamp(1.4rem,3vw,2rem);line-height:1;font-weight:400;letter-spacing:-.01em;margin:0}
+.sess h2 em{font-style:italic;color:rgba(240,237,230,.4)}
+.sess-d{font-family:var(--mono);font-size:.58rem;color:rgba(240,237,230,.25);letter-spacing:.08em;margin-top:0;margin-left:auto;white-space:nowrap}
+
+/* ── BIG QUOTES / BREATHERS ── */
+.big-breather{padding:8rem 2.5rem;border-bottom:1px solid var(--line)}
+.bq-wrap{display:flex;align-items:flex-start;gap:5rem}
+.bq-fig{font-family:var(--mono);font-size:.58rem;color:var(--mid);text-transform:uppercase;letter-spacing:.1em;padding-top:.6rem;white-space:nowrap}
+.bq-text{font-family:var(--serif);font-size:clamp(2.5rem,5.5vw,5.5rem);line-height:.93;letter-spacing:-.02em;font-weight:400}
+.bq-text em{font-style:italic}
+.bq-text u{text-decoration:none;color:var(--blue)}
+
+/* ── BLOCK LAYOUT ── */
+.blk{display:grid;grid-template-columns:260px 1fr;border-bottom:1px solid var(--line)}
+.blk-side{border-right:1px solid var(--line);padding:4rem 2rem;position:sticky;top:44px;height:calc(100vh - 44px);display:flex;flex-direction:column;gap:2rem;overflow-y:auto}
+.blk-main{padding:4rem 3rem}
+.side-tag{font-family:var(--mono);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;padding:.2rem .55rem;border:1px solid currentColor;display:inline-block;width:fit-content}
+.t-intro{color:#7B68C8}.t-ref{color:#2a8a6e}.t-gen{color:#b07a25}
+.t-vid{color:var(--blue)}.t-3d{color:#2a8a6e}.t-live{color:var(--blue)}
+.t-web{color:var(--blue)}.t-qa{color:var(--mid)}
+.side-time{font-family:var(--mono);font-size:.6rem;color:var(--mid);letter-spacing:.06em}
+.side-title{font-family:var(--serif);font-size:1.8rem;line-height:1.0;font-weight:400;flex:1}
+.side-tools{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:auto}
+.tp{font-family:var(--mono);font-size:.52rem;padding:.14rem .44rem;border:1px solid var(--line);color:var(--mid);letter-spacing:.06em;text-transform:uppercase}
+.tp.fr{border-color:#2a8a6e;color:#2a8a6e}
+.tp.fm{border-color:#b07a25;color:#b07a25}
+.tp.pd{border-color:var(--blue);color:var(--blue)}
+
+/* ── CONCEPT LIST ── */
+.clist{display:flex;flex-direction:column}
+.ci{display:grid;grid-template-columns:36px 1fr;gap:.75rem;align-items:start;border-bottom:1px solid var(--line);padding:1.8rem 0}
+.ci:last-child{border-bottom:none}
+.ci-n{font-family:var(--mono);font-size:.56rem;color:var(--mid);padding-top:.25rem}
+.ci-t{font-size:1rem;line-height:1.6}
+.ci-t strong{font-weight:600}
+.ci-t code{font-family:var(--mono);font-size:.82em;background:rgba(0,0,0,.06);padding:.05em .35em}
+
+/* ── HIGHLIGHT BOX ── */
+.hl{background:var(--ink);color:var(--paper);padding:4rem;margin:3rem 0}
+.hl-l{font-family:var(--mono);font-size:.58rem;color:rgba(240,237,230,.3);text-transform:uppercase;letter-spacing:.14em;margin-bottom:1.2rem}
+.hl-t{font-family:var(--serif);font-size:clamp(1.8rem,3vw,3.2rem);line-height:1.0;font-weight:400}
+.hl-t em{font-style:italic;color:rgba(240,237,230,.45)}
+.hl-t .blue{color:var(--blue)}
+
+/* ── TIP ── */
+.tip{border-left:2px solid var(--blue);padding:1rem 1.5rem;margin:2rem 0;background:rgba(0,0,255,.04)}
+.tip-l{font-family:var(--mono);font-size:.56rem;color:var(--blue);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.4rem}
+.tip p{font-size:.9rem;line-height:1.55}
+
+/* ── INTERACTIVE ── */
+.inter{border:1px solid var(--line);margin:3rem 0}
+.inter-head{background:var(--ink);padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.inter-badge{font-family:var(--mono);font-size:.56rem;color:var(--blue);text-transform:uppercase;letter-spacing:.12em;white-space:nowrap}
+.inter-title{font-family:var(--serif);font-size:1rem;color:var(--paper);font-weight:400}
+.wall-area{padding:1.5rem}
+.wall-row{display:flex;gap:.5rem;margin-bottom:1.2rem}
+.wall-in{flex:1;font-family:var(--mono);font-size:.82rem;padding:.55rem .8rem;border:1px solid var(--line);background:var(--paper);color:var(--ink);outline:none}
+.wall-in:focus{border-color:var(--blue)}
+.wall-btn{font-family:var(--mono);font-size:.6rem;padding:.55rem 1.1rem;background:var(--ink);color:var(--paper);border:none;cursor:pointer;text-transform:uppercase;letter-spacing:.1em;transition:background .12s}
+.wall-btn:hover{background:var(--blue)}
+.wall-posts{display:flex;flex-wrap:wrap;gap:.5rem}
+.wall-post{font-family:var(--sans);font-size:.85rem;padding:.45rem .9rem;border:1px solid var(--line);animation:pin .3s ease;max-width:280px;word-break:break-word}
+@keyframes pin{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.wall-area.dk .wall-in{background:rgba(240,237,230,.07);color:var(--paper);border-color:rgba(240,237,230,.15)}
+.wall-area.dk .wall-post{background:rgba(240,237,230,.06);color:var(--paper);border-color:rgba(240,237,230,.12)}
+.vote-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.5rem;padding:1.5rem}
+.vote-opt{padding:1rem;border:1px solid var(--line);background:var(--paper);cursor:pointer;text-align:left;transition:all .12s;font-family:var(--sans)}
+.vote-opt:hover{border-color:var(--ink)}
+.vote-opt.sel{background:var(--blue);color:#fff;border-color:var(--blue)}
+.vo-lbl{font-size:.88rem;display:block;margin-bottom:.6rem}
+.vo-bar{height:2px;background:rgba(0,0,0,.1);margin-top:.6rem}
+.vo-bar.dk{background:rgba(255,255,255,.1)}
+.vo-fill{height:100%;background:var(--blue);transition:width .45s ease}
+.vote-opt.sel .vo-bar{background:rgba(255,255,255,.2)}
+.vo-cnt{font-family:var(--mono);font-size:.56rem;color:var(--mid);margin-top:.3rem;letter-spacing:.05em}
+.vote-opt.sel .vo-cnt{color:rgba(255,255,255,.6)}
+
+/* ── Q&A ── */
+.qa{background:var(--ink);color:var(--paper);padding:8rem 2.5rem;border-bottom:1px solid #222}
+.qa-meta{font-family:var(--mono);font-size:.6rem;color:rgba(240,237,230,.3);text-transform:uppercase;letter-spacing:.12em;margin-bottom:1.2rem}
+.qa h3{font-family:var(--serif);font-size:clamp(3rem,6vw,6rem);font-weight:400;line-height:.88;margin-bottom:3rem}
+.qa h3 em{font-style:italic;color:rgba(240,237,230,.4)}
+.qa-items{display:flex;flex-direction:column}
+.qa-item{display:grid;grid-template-columns:28px 1fr;gap:1rem;align-items:start;border-top:1px solid rgba(240,237,230,.08);padding:1.2rem 0;font-size:1rem;color:rgba(240,237,230,.65)}
+.qa-dot{font-family:var(--mono);font-size:.58rem;color:var(--blue);padding-top:.2rem}
+
+/* ── AVANCES ── */
+.av-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin:3rem 0}
+.av-card{padding:2.5rem;background:var(--paper);transition:all .15s;cursor:default}
+.av-card:hover{background:var(--blue);color:#fff}
+.av-card:hover .av-tag{color:rgba(255,255,255,.5)}
+.av-card:hover .av-desc{color:rgba(255,255,255,.7)}
+.av-tag{font-family:var(--mono);font-size:.56rem;color:var(--blue);text-transform:uppercase;letter-spacing:.12em;margin-bottom:.8rem;transition:color .15s}
+.av-title{font-family:var(--serif);font-size:1.5rem;line-height:1.05;font-weight:400;margin-bottom:.6rem}
+.av-desc{font-size:.85rem;color:var(--mid);line-height:1.55;transition:color .15s}
+
+/* ── RECURSOS ── */
+.res-sec{padding:5rem 2.5rem;border-bottom:1px solid var(--line)}
+.res-sec h3{font-family:var(--serif);font-size:2.5rem;font-weight:400;margin-bottom:.4rem}
+.res-sub{font-family:var(--mono);font-size:.6rem;color:var(--mid);letter-spacing:.06em;margin-bottom:2.5rem}
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+.tc{background:var(--paper);padding:1.4rem;transition:background .12s;cursor:pointer}
+.tc:hover{background:var(--ink)}
+.tc:hover .tc-name{color:var(--paper)}
+.tc:hover .tc-desc{color:rgba(240,237,230,.5)}
+.tc:hover .tc-badge{opacity:.7}
+.tc a{text-decoration:none;color:inherit;display:block}
+.tc-badge{font-family:var(--mono);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;padding:.12rem .4rem;border:1px solid;display:inline-block;margin-bottom:.6rem}
+.tc-badge.fr{border-color:#2a8a6e;color:#2a8a6e}
+.tc-badge.fm{border-color:#b07a25;color:#b07a25}
+.tc-badge.pd{border-color:var(--blue);color:var(--blue)}
+.tc-name{font-family:var(--serif);font-size:1.15rem;line-height:1.1;font-weight:400;margin-bottom:.3rem;color:var(--ink);transition:color .12s}
+.tc-desc{font-size:.78rem;color:var(--mid);line-height:1.4;transition:color .12s}
+
+/* ── LEGEND ── */
+.legend{display:flex;gap:1.5rem;flex-wrap:wrap;font-family:var(--mono);font-size:.58rem;color:var(--mid);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2.5rem}
+.legend-item{display:flex;align-items:center;gap:.5rem}
+.ld{width:7px;height:7px;border-radius:50%}
+
+/* ── PROJECT SLOT ── */
+.proj-slot{border:1px dashed var(--line);padding:3rem 2rem;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:180px;text-align:center;gap:.7rem;cursor:pointer;transition:border-color .15s;margin:3rem 0}
+.proj-slot:hover{border-color:var(--blue)}
+.proj-slot:hover .ps-ico{opacity:.5;color:var(--blue)}
+.ps-ico{font-size:1.8rem;opacity:.15;transition:all .15s}
+.ps-lbl{font-family:var(--mono);font-size:.6rem;color:var(--mid);text-transform:uppercase;letter-spacing:.12em}
+.ps-sub{font-size:.78rem;color:var(--mid);max-width:280px;line-height:1.4}
+
+/* ── HORIZONTAL RULE BREATHER ── */
+.rule-wide{border:none;border-top:1px solid var(--line);margin:4rem 0}
+
+/* ── FOOTER ── */
+footer{padding:6rem 2.5rem;display:grid;grid-template-columns:1fr 1fr;gap:4rem;border-top:1px solid var(--line);align-items:end}
+.ft-big{font-family:var(--serif);font-size:clamp(4rem,9vw,9rem);line-height:.86;font-weight:400;letter-spacing:-.02em}
+.ft-big em{font-style:italic}
+.ft-big span{color:var(--blue)}
+.ft-info{font-family:var(--mono);font-size:.6rem;color:var(--mid);line-height:2.2;letter-spacing:.06em;text-transform:uppercase}
+.ft-info a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line)}
+.ft-info a:hover{border-color:var(--blue);color:var(--blue)}
+
+/* ── REVEAL ── */
+.rev{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease}
+.rev.in{opacity:1;transform:none}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .blk{grid-template-columns:1fr}
+  .blk-side{position:static;height:auto;border-right:none;border-bottom:1px solid var(--line)}
+  .nav-links{display:none}
+  .hero-foot{grid-template-columns:1fr 1fr}
+  footer{grid-template-columns:1fr}
+  .ig-3{grid-template-columns:1fr 1fr}
+  .bq-wrap{flex-direction:column;gap:2rem}
+  .big-breather{padding:5rem 2rem}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-id" href="#hero">IA <span>×</span> Arte — ESDI</a>
+  <ul class="nav-links">
+    <li><a href="#intro">Intro</a></li>
+    <li><a href="#clase1">Clase 1</a></li>
+    <li><a href="#clase2">Clase 2</a></li>
+    <li><a href="#avances">Avances</a></li>
+    <li><a href="#recursos">Recursos</a></li>
+  </ul>
+  <span id="nav-loc">ESDI · Mayo 2025</span>
+</nav>
+<div id="prog"></div>
+
+
+<!-- ══════════════ HERO ══════════════ -->
+<section id="hero" style="position:relative">
+  <img src="https://d2w9rnfcy7mm78.cloudfront.net/46117688/original_09753e25531b5c93d07a51cd83a825c5.png?1778684149?bc=0" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.18;pointer-events:none;z-index:0">
+  <div class="hero-ghost" style="position:relative;z-index:1">Artificial</div>
+  <div class="hero-inner" style="position:relative;z-index:1">
+    <p class="hero-eyebrow">ESDI · Máster Dirección de Arte Audiovisual · <span>26–27 Mayo 2025</span></p>
+    <h1 class="hero-h">
+      Inteligencia<br>
+      Artificial<br>
+      para <em>Dirección</em><br>
+      de <em>Arte<span class="underscore blink">_</span></em>
+    </h1>
+  </div>
+  <div class="hero-foot">
+    <div class="hero-cell"><p class="hc-l">Ponente</p><p class="hc-v">Mateo</p></div>
+    <div class="hero-cell"><p class="hc-l">Profesor</p><p class="hc-v">Virgili Jubero</p></div>
+    <div class="hero-cell"><p class="hc-l">Sesiones</p><p class="hc-v">2 clases · 2h c/u</p></div>
+    <div class="hero-cell"><p class="hc-l">Formato</p><p class="hc-v">Online</p></div>
+    <div class="hero-cell"><p class="hc-l">Web</p><p class="hc-v"><a href="https://toro-bravo.github.io/" target="_blank">toro-bravo.github.io</a></p></div>
+  </div>
+  <span class="scroll-arrow">Scroll</span>
+</section>
+
+
+<!-- ══════════════ FULL BLEED 01 — APERTURA ══════════════ -->
+<div class="fullbleed h70">
+  <video autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+    <source src="https://attachments.are.na/46117420/3cdd3120c98288210ca3301ae3c50dfd.mp4?1778683728" type="video/mp4">
+  </video>
+  <span class="fb-corner tl">IA × Arte 2025</span>
+  <span class="fb-corner br">ESDI · Máster DAA</span>
+</div>
+
+
+<!-- ══════════════ INTRO ══════════════ -->
+<section id="intro">
+
+<div class="big-breather">
+  <div class="bq-wrap">
+    <span class="bq-fig">(fig.00)</span>
+    <p class="bq-text">"La IA no te va<br>a quitar el trabajo.<br>Te lo quita <em>quien sabe<br>usarla</em> mejor que <u>tú.</u>"</p>
+  </div>
+</div>
+
+<!-- interactivos intro -->
+<div class="blk rev" style="min-height:auto" id="intro-inter">
+  <div class="blk-side" style="position:static;height:auto">
+    <span class="side-tag t-live">● Live</span>
+    <p class="side-title">¿Qué sabes ya de IA?</p>
+    <p class="side-time">Apertura · 5 min</p>
+  </div>
+  <div class="blk-main">
+    <div class="inter">
+      <div class="inter-head"><span class="inter-badge">● Muro anónimo</span><span class="inter-title">¿Qué herramienta de IA has usado ya?</span></div>
+      <div class="wall-area">
+        <div class="wall-row"><input class="wall-in" id="w1-in" type="text" placeholder="Escribe una herramienta o respuesta anónima..." maxlength="80"><button class="wall-btn" onclick="post('w1')">Enviar ↵</button></div>
+        <div class="wall-posts" id="w1-posts"><div class="wall-post">ChatGPT para textos</div><div class="wall-post">Midjourney</div><div class="wall-post">Ninguna todavía</div></div>
+      </div>
+    </div>
+    <div class="inter">
+      <div class="inter-head"><span class="inter-badge">● Votación</span><span class="inter-title">¿Cuánto usas la IA en tu trabajo actual?</span></div>
+      <div class="vote-opts" id="v1">
+        <button class="vote-opt" onclick="vote('v1',0)"><span class="vo-lbl">Nada todavía</span><div class="vo-bar"><div class="vo-fill" style="width:0%"></div></div><span class="vo-cnt">0 votos</span></button>
+        <button class="vote-opt" onclick="vote('v1',1)"><span class="vo-lbl">Algo, experimentando</span><div class="vo-bar"><div class="vo-fill" style="width:0%"></div></div><span class="vo-cnt">0 votos</span></button>
+        <button class="vote-opt" onclick="vote('v1',2)"><span class="vo-lbl">La uso habitualmente</span><div class="vo-bar"><div class="vo-fill" style="width:0%"></div></div><span class="vo-cnt">0 votos</span></button>
+        <button class="vote-opt" onclick="vote('v1',3)"><span class="vo-lbl">Es central en mi flujo</span><div class="vo-bar"><div class="vo-fill" style="width:0%"></div></div><span class="vo-cnt">0 votos</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- contexto -->
+<div class="blk rev" style="min-height:auto" id="contexto">
+  <div class="blk-side" style="position:static;height:auto">
+    <span class="side-tag t-intro">Contexto</span>
+    <p class="side-title">La burbuja de la IA</p>
+    <p class="side-time">0:00 – 0:10</p>
+  </div>
+  <div class="blk-main">
+    <div class="clist">
+      <div class="ci"><span class="ci-n">01</span><div class="ci-t"><strong>IA como herramienta, no como sustituto.</strong> Aprender a dirigir la herramienta, no a depender de ella.</div></div>
+      <div class="ci"><span class="ci-n">02</span><div class="ci-t"><strong>El momento NFT.</strong> La burbuja: quién gana, quién pierde y por qué el hype no define el valor real.</div></div>
+      <div class="ci"><span class="ci-n">03</span><div class="ci-t"><strong>Italian Brainrot y la democratización.</strong> Cuando todos pueden hacerlo, lo que vale es la visión creativa. La IA amplifica la dirección, no la crea.</div></div>
+      <div class="ci"><span class="ci-n">04</span><div class="ci-t"><strong>La IA como herramienta histórica.</strong> Igual que el Photoshop o el video digital: requiere adaptación, no rendición.</div></div>
+    </div>
+    <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin:2rem 0;background:var(--ink)">
+      <iframe src="https://www.youtube.com/embed/HAB3xCkgeQ8" style="position:absolute;inset:0;width:100%;height:100%;border:none" allow="autoplay;encrypted-media" allowfullscreen loading="lazy"></iframe>
+    </div>
+    <div class="hl">
+      <p class="hl-l">Premisa de la clase</p>
+      <p class="hl-t">La técnica sin visión<br>es <em>ruido.</em><br>La visión sin técnica<br>es <em>frustración.</em></p>
+    </div>
+  </div>
+</div>
+</section>
+
+
+<!-- ══════════════ CLASE 1 ══════════════ -->
+<div class="sess" id="clase1">
+  <p class="sess-n">Sesión 01 · 26 Mayo 2025 · 2h</p>
+  <h2>Pre<em>pro</em>ducción:<br>de la idea<br>a la <em>maqueta</em></h2>
+  <p class="sess-d">0:00 – 2:00 · Online</p>
+</div>
+
+
+<!-- ── REFERENCIAS ── -->
+<div class="blk rev" id="b-ref">
+  <div class="blk-side">
+    <span class="side-tag t-ref">Referencias</span>
+    <p class="side-time">0:10 – 0:35</p>
+    <p class="side-title">Búsqueda y gestión de referencias</p>
+    <div class="side-tools">
+      <span class="tp fr">Are.na</span><span class="tp fr">Google Lens</span><span class="tp fr">Pinterest</span><span class="tp fm">FilmAI</span>
+    </div>
+  </div>
+  <div class="blk-main">
+    <p style="font-family:var(--mono);font-size:.62rem;color:var(--mid);margin-bottom:2.5rem;text-transform:uppercase;letter-spacing:.1em;">El prompt empieza antes de escribir el prompt</p>
+    <div class="clist">
+      <div class="ci"><span class="ci-n">01</span><div class="ci-t"><strong>Las referencias son el 80% del resultado.</strong> La IA es impredecible, la referencia la doma. Sin dirección visual clara, el modelo improvisa. Tu tablero de referencias es el brief real.</div></div>
+      <div class="ci"><span class="ci-n">02</span><div class="ci-t"><strong>Are.na como gestor de referencias.</strong> Gratuito, visual, sin algoritmo. Tableros por proyecto, vinculados desde la web. Así trabaja Mateo.</div></div>
+      <div class="ci"><span class="ci-n">03</span><div class="ci-t"><strong>Las referencias evitan el plagio visual.</strong> Con IA: usas la <em>pose</em> de una imagen, la <em>luz</em> de otra, el <em>color</em> de una tercera. Frankenstein visual: siempre nuevo, siempre tuyo.</div></div>
+      <div class="ci"><span class="ci-n">04</span><div class="ci-t"><strong>Múltiples referencias para atributos distintos.</strong> "La pose de esta, la luz de aquella, ahora cambia el modelo." Eso es dirección de arte con IA.</div></div>
+      <div class="ci"><span class="ci-n">05</span><div class="ci-t"><strong>FilmAI.</strong> Buscar referencias cinematográficas por estética, paleta, director o DP. Indispensable para preproducción audiovisual.</div></div>
+    </div>
+    <div class="tip"><p class="tip-l">→ Método</p><p>Antes de lanzar cualquier prompt, 10 min de tablero Are.na con 6–10 referencias. Eso es tu prompt visual real.</p></div>
+    <div class="inter">
+      <div class="inter-head"><span class="inter-badge">● Muro anónimo</span><span class="inter-title">¿Cuál es tu mayor dificultad al buscar referencias?</span></div>
+      <div class="wall-area"><div class="wall-row"><input class="wall-in" id="w2-in" type="text" placeholder="Escribe tu respuesta..." maxlength="100"><button class="wall-btn" onclick="post('w2')">Enviar ↵</button></div><div class="wall-posts" id="w2-posts"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- FULLBLEED: referencias -->
+<div class="fullbleed h50 rev">
+  <video autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+    <source src="https://attachments.are.na/46118562/0c9b87ce5d5e71b1b9e7d826fac0f9c7.mp4?1778685999" type="video/mp4">
+  </video>
+  <span class="fb-corner tl">(fig.01) · Are.na board</span>
+  <span class="fb-corner br">Referencia es dirección</span>
+</div>
+<div class="wrap">
+  <div class="fb-caption"><span class="fb-cap-l">(fig.01) · Tablero de referencias · Are.na</span><span class="fb-cap-r">Sustituye con captura propia</span></div>
+</div>
+
+
+<!-- ── PRESUPUESTO ── -->
+<div class="blk rev" id="b-budget">
+  <div class="blk-side">
+    <span class="side-tag t-intro">Producción real</span>
+    <p class="side-time">0:35 – 0:50</p>
+    <p class="side-title">Presupuesto, método y margen de error</p>
+  </div>
+  <div class="blk-main">
+    <p style="font-family:var(--mono);font-size:.62rem;color:var(--mid);margin-bottom:2.5rem;text-transform:uppercase;letter-spacing:.1em;">Aprendido en proyectos reales</p>
+    <div class="clist">
+      <div class="ci"><span class="ci-n">01</span><div class="ci-t"><strong>Contar la IA en el presupuesto desde el principio.</strong> En un proyecto de 400€ puedes acabar destinando entre 100€ y 150€ en software de generación. No es un coste extra: es parte del flujo de producción.</div></div>
+      <div class="ci"><span class="ci-n">02</span><div class="ci-t"><strong>Stills primero, animación después.</strong> En el 90% de los proyectos: primero generas la imagen fija, luego la animas. Lo que cuesta más dinero es animar. El still es barato, el movimiento es caro.</div></div>
+      <div class="ci"><span class="ci-n">03</span><div class="ci-t"><strong>Cerrar el storyboard antes de animar.</strong> Generar todas las imágenes del vídeo, hacer una animática, validar con cliente. Una vez cerrado y aprobado, entonces animas. Así controlas los costes.</div></div>
+      <div class="ci"><span class="ci-n">04</span><div class="ci-t"><strong>Comunicar el margen de error al cliente.</strong> Con la IA existe un cierto margen de impredictibilidad. El cliente tiene que entenderlo desde el principio. No es un fallo: es la naturaleza de la herramienta.</div></div>
+    </div>
+    <div class="hl">
+      <p class="hl-l">Flujo real de producción</p>
+      <p class="hl-t" style="font-size:clamp(1.1rem,2vw,1.8rem);line-height:1.5;">Referencias → Stills → <em>Storyboard aprobado</em><br>→ Animación → Postproducción</p>
+    </div>
+    <div class="proj-slot" style="padding:0;min-height:0;border:none;margin:3rem 0">
+      <video autoplay muted loop playsinline style="width:100%;display:block">
+        <source src="https://attachments.are.na/46118181/c7fc0ec4e9a8f32f894628a2ebbae771.mp4?1778685205" type="video/mp4">
+      </video>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── GENERACIÓN DE IMAGEN ── -->
+<div class="blk rev" id="b-img">
+  <div class="blk-side">
+    <span class="side-tag t-gen">Generación</span>
+    <p class="side-time">0:50 – 1:15</p>
+    <p class="side-title">Generación de imagen</p>
+    <div class="side-tools">
+      <span class="tp fm">Midjourney</span><span class="tp fr">NanoBanana / Flow</span><span class="tp fm">Krea AI</span><span class="tp fr">ComfyUI</span><span class="tp fm">Flair.ai</span>
+    </div>
+  </div>
+  <div class="blk-main">
+    <p style="font-family:var(--mono);font-size:.62rem;color:var(--mid);margin-bottom:2.5rem;text-transform:uppercase;letter-spacing:.1em;">Concept art, storyboards y variaciones de estilo</p>
+    <div class="clist">
+      <div class="ci"><span class="ci-n">01</span><div class="ci-t"><strong>Midjourney: el estándar.</strong> Arrastrar imágenes directamente como referencia de estilo, de pose, o usar Omni Reference. La clave real: generar variaciones a partir de lo que ya genera. Dejar que la máquina mejore por su cuenta. Cuando la dejas iterar, la calidad sube sola.</div></div>
+      <div class="ci"><span class="ci-n">02</span><div class="ci-t"><strong>NanoBanana en Flow: generaciones ilimitadas y gratuitas.</strong> Edita la imagen generada por encima, añade inputs en capas, cambia elementos concretos. Muy bueno para storyboards, convertir referencias a dibujos y trabajar elementos progresivamente.</div></div>
+      <div class="ci"><span class="ci-n">03</span><div class="ci-t"><strong>NanoBanana para product placement.</strong> Sube una imagen de referencia con la composición que quieres → cambia un objeto por tu producto (una camiseta, una bebida, un coche). Sin rehacer la escena entera.</div></div>
+      <div class="ci"><span class="ci-n">04</span><div class="ci-t"><strong>Cinema Studio: lenguaje de cámara en el prompt.</strong> "Foto de una chica" vs "Fujifilm X-T4, flash directo, 35mm" son dos mundos. O Sony A7S3, 70mm, luz natural de ventana. El conocimiento técnico dirige mejor la IA.</div></div>
+      <div class="ci"><span class="ci-n">05</span><div class="ci-t"><strong>Insertar productos en escenas.</strong> Flair.ai para mockups de producto rápidos. ComfyUI para control total (más técnico, completamente gratuito y local).</div></div>
+      <div class="ci"><span class="ci-n">06</span><div class="ci-t"><strong>Sketch a imagen con Krea AI.</strong> Línea a render en tiempo real. Boceta ideas de plano directamente sobre una referencia, ve el resultado mientras dibujas.</div></div>
+    </div>
+    <div class="tip"><p class="tip-l">→ Método Midjourney</p><p>Descarga imágenes y arrástralas directamente. Genera variaciones de lo que te da primero. La máquina mejora por su cuenta cuando la dejas iterar.</p></div>
+  </div>
+</div>
+
+<!-- FULLBLEED: midjourney ejemplo -->
+<div class="fullbleed h70 rev">
+  <img src="https://d2w9rnfcy7mm78.cloudfront.net/46117807/original_d94fd31362670728a6caf9f1f0662794.png?1778684364?bc=0" alt="Ejemplo Midjourney / NanoBanana" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+  <span class="fb-corner tl">(fig.02) · Midjourney · Referencia + Output</span>
+  <span class="fb-corner tr">Frankenstein visual</span>
+  <span class="fb-corner bl">Pose de A · Luz de B · Estilo de C</span>
+</div>
+<div class="wrap">
+  <div class="fb-caption"><span class="fb-cap-l">(fig.02) · Imagen generada · Midjourney</span><span class="fb-cap-r">Sustituye con ejemplo propio</span></div>
+</div>
+
+<!-- grid proceso -->
+<div class="blk" style="min-height:auto;border-top:none">
+  <div class="blk-side" style="position:static;height:auto;border-right:1px solid var(--line)">
+    <span class="side-tag t-gen">Proceso</span>
+    <p class="side-title">Antes / durante / después</p>
+  </div>
+  <div class="blk-main">
+    <div class="img-grid ig-3">
+      <div class="img-slot sq" style="grid-column:1/-1;aspect-ratio:auto;height:400px">
+        <img src="https://d2w9rnfcy7mm78.cloudfront.net/46118375/original_d542b40e900a5af229d69b1acf5ceebd.png?1778685616?bc=0" alt="Proceso NanoBanana">
+      </div>
+    </div>
+    <hr class="rule-wide">
+    <p style="font-family:var(--serif);font-size:1.5rem;margin-bottom:1.5rem;font-weight:400">Storyboard y animáticas</p>
+    <div class="clist">
+      <div class="ci"><span class="ci-n">01</span><div class="ci-t"><strong>NanoBanana para storyboards.</strong> Convierte referencias visuales en dibujos de storyboard. Trabaja elemento por elemento sobre la misma imagen base.</div></div>
+      <div class="ci"><span class="ci-n">02</span><div class="ci-t"><strong>LTX Studio.</strong> Storyboards completos desde guión. Secuencias visuales coherentes con personajes consistentes.</div></div>
+      <div class="ci"><span class="ci-n">03</span><div class="ci-t"><strong>Animáticas desde imágenes.</strong> Runway y Kling AI para animar frames estáticos antes de comprometerse con la animación final.</div></div>
+    </div>
+    <div class="img-grid ig-2">
+      <div class="img-slot vid" style="grid-column:1/-1;aspect-ratio:auto;height:360px">
+        <img src="https://d2w9rnfcy7mm78.cloudfront.net/46118699/original_45abb05ee5a1ae0718db0e2635d6039a.png?1778686332?bc=0" alt="Storyboard IA ejemplo">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── 3D + PITCH ── -->
+<div class="blk rev">
+  <div class="blk-side">
+    <span class="side-tag t-3d">3D · Pitch</span>
+    <p class="side-time">1:15 – 1:25</p>
+    <p class="side-title">3D, presentaciones y Claude como herramienta</p>
+    <div class="side-tools">
+      <span class="tp fm">Meshy.ai</span><span class="tp fr">Blender</span><span class="tp fm">Gamma.app</span><span class="tp fm">Claude</span>
+    </div>
+  </div>
+  <div class="blk-main">
+    <div class="clist">
+      <div class="ci"><span class="ci-n">01</span><div class="ci-t"><strong>Modelos 3D desde imagen.</strong> Meshy.ai: sube una foto, obtienes un .glb o .obj. Exportar a Blender para iluminar y encuadrar storyboards volumétricos.</div></div>
+      <div class="ci"><span class="ci-n">02</span><div class="ci-t"><strong>Presentaciones con IA: el caso de esta clase.</strong> Esta misma presentación fue creada con Claude. Describes lo que quieres, obtienes el código HTML listo. Sin saber programar. Cualquiera puede hacer esto.</div></div>
+      <div class="ci"><span class="ci-n">03</span><div class="ci-t"><strong>Gamma.app para pitches rápidos.</strong> Deck completo desde un brief de texto. Ideal cuando hay poco tiempo y tiene que verse bien.</div></div>
+    </div>
+    <div class="hl">
+      <p class="hl-l">Ejemplo real</p>
+      <p class="hl-t" style="font-size:clamp(1rem,1.8vw,1.6rem);line-height:1.5;">Esta presentación fue creada con <span class="blue">Claude.</span><br>Lenguaje natural → código listo para publicar.<br>Coste: 0€.</p>
+    </div>
+    <a href="https://toro-bravo.github.io/" target="_blank" style="display:block;margin:3rem 0;text-decoration:none;position:relative;overflow:hidden;cursor:pointer">
+      <video autoplay muted loop playsinline style="width:100%;display:block">
+        <source src="https://attachments.are.na/41581566/01a67e2539b0732918fe6b6b498d7fbe.mp4?1764882604" type="video/mp4">
+      </video>
+      <span style="position:absolute;bottom:1rem;left:1rem;font-family:var(--mono);font-size:.6rem;color:rgba(255,255,255,.6);letter-spacing:.1em;text-transform:uppercase;background:rgba(0,0,0,.4);padding:.3rem .6rem">↗ toro-bravo.github.io</span>
+    </a>
+  </div>
+</div>
+
+
+<!-- ── AUDIO PREPRODUCCIÓN ── -->
+<div class="blk rev">
+  <div class="blk-side">
+    <span class="side-tag t-ref">Audio</span>
+    <p class="side-time">1:25 – 1:35</p>
+    <p class="side-title">Audio para pitches y presentaciones</p>
+    <div class="side-tools">
+      <span class="tp fm">ElevenLabs</span><span class="tp fm">Suno AI</span><span class="tp fr">AudioCraft</span><span class="tp fm">Artlist AI</span>
+    </div>
+  </div>
+  <div class="blk-main">
+    <div class="clist">
+      <div class="ci"><span class="ci-n">01</span><div class="ci-t"><strong>ElevenLabs: voz en off y lip sync en la misma plataforma.</strong> Crea la voz y haz el lip sync directamente. Gestión de créditos razonable. El estándar para síntesis y clonación de voz.</div></div>
+      <div class="ci"><span class="ci-n">02</span><div class="ci-t"><strong>Suno AI: música generada y versiones de canciones existentes.</strong> Arrastra una canción y pídele que cree versiones nuevas de esa misma canción. Ideal para moodreels y adaptaciones. Plan gratuito generoso.</div></div>
+      <div class="ci"><span class="ci-n">03</span><div class="ci-t"><strong>Artlist AI: generación con licencias limpias.</strong> Cuando el proyecto lleva una campaña de cliente y el IP del audio importa.</div></div>
+    </div>
+    <div class="img-grid ig-2">
+      <div class="img-slot" style="aspect-ratio:4/3">
+        <img src="https://d2w9rnfcy7mm78.cloudfront.net/46118807/original_9e1e6fe09b49909313f26453597b0970.png?1778686706?bc=0" alt="ElevenLabs lip sync ejemplo">
+      </div>
+      <div class="img-slot" style="aspect-ratio:4/3;padding:0;overflow:hidden">
+        <video autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+          <source src="https://attachments.are.na/46118788/2852b02e0f530a58b9ca6e4468ad1932.mp4?1778686634" type="video/mp4">
+        </video>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Q&A CLASE 1 -->
+<div class="qa" id="qa1">
+  <p class="qa-meta">Clase 1 · 1:35 – 2:00</p>
+  <h3>Q&amp;A<br><em>Preproducción</em></h3>
+  <div class="qa-items">
+    <div class="qa-item"><span class="qa-dot">→</span><span>Espacio para resolver dudas y demos en vivo según interés del grupo</span></div>
+    <div class="qa-item"><span class="qa-dot">→</span><span>Mostrar pantalla: flujo completo Are.na → Midjourney/NanoBanana → variaciones → maqueta</span></div>
+    <div class="qa-item"><span class="qa-dot">→</span><span>Si una herramienta falla en directo, aprovéchalo — habla de limitaciones reales y alternativas</span></div>
+  </div>
+  <div class="inter" style="margin-top:3rem">
+    <div class="inter-head"><span class="inter-badge">● Reflexión · sin respuesta correcta</span><span class="inter-title">Si la IA puede generar cualquier imagen, ¿qué es lo que ya no puede imitar de tu trabajo?</span></div>
+    <div class="wall-area dk"><div class="wall-row"><input class="wall-in" id="w3-in" type="text" placeholder="Escribe tu reflexión de forma anónima..." maxlength="120"><button class="wall-btn" onclick="post('w3')" style="background:var(--blue)">Enviar ↵</button></div><div class="wall-posts" id="w3-posts"></div></div>
+  </div>
+  <div class="inter" style="margin-top:1rem">
+    <div class="inter-head"><span class="inter-badge">● Para clase 2</span><span class="inter-title">¿Qué quieres ver mañana?</span></div>
+    <div class="wall-area dk"><div class="wall-row"><input class="wall-in" id="w4-in" type="text" placeholder="Herramienta, tema o duda..." maxlength="100"><button class="wall-btn" onclick="post('w4')" style="background:var(--blue)">Enviar ↵</button></div><div class="wall-posts" id="w4-posts"></div></div>
+  </div>
+</div>
+
+
+<!-- ══════════════ FULLBLEED TRANSICIÓN ══════════════ -->
+<div class="fullbleed h80">
+  <img src="https://d2w9rnfcy7mm78.cloudfront.net/46117670/original_6511439d0d50171911f6a887c422e0e8.png?1778684094?bc=0" alt="Transición sesiones" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+  <span class="fb-corner tl">(fig.03) · De la maqueta al entregable</span>
+  <span class="fb-corner br">Sesión 02 →</span>
+</div>
+
+
+<!-- ══════════════ CLASE 2 ══════════════ -->
+<div class="sess" id="clase2">
+  <p class="sess-n">Sesión 02 · 27 Mayo 2025 · 2h</p>
+  <h2>Pro<em>duc</em>ción:<br>del concepto<br>al <em>entregable</em></h2>
+  <p class="sess-d">0:00 – 2:00 · Online</p>
+</div>
+
+
+<!-- apertura c2 -->
+<div class="blk rev" style="min-height:auto">
+  <div class="blk-side" style="position:static;height:auto">
+    <span class="side-tag t-intro">Apertura</span>
+    <p class="side-title">De la preproducción al resultado</p>
+    <p class="side-time">0:00 – 0:10</p>
+  </div>
+  <div class="blk-main">
+    <div class="inter">
+      <div class="inter-head"><span class="inter-badge">● Votación</span><span class="inter-title">¿Qué parte te interesa más hoy?</span></div>
+      <div class="vote-opts" id="v2">
+        <button class="vote-opt" onclick="vote('v2',0)"><span class="vo-lbl">Video con calidad de producción</span><div class="vo-bar"><div class="vo-fill" style="width:0%"></div></div><span class="vo-cnt">0 votos</span></button>
+        <button class="vote-opt" onclick="vote('v2',1)"><span class="vo-lbl">3D y compositing</span><div class="vo-bar"><div class="vo-fill" style="width:0%"></div></div><span class="vo-cnt">0 votos</span></button>
+        <button class="vote-opt" onclick="vote('v2',2)"><span class="vo-lbl">Instalaciones real time</span><div class="vo-bar"><div class="vo-fill" style="width:0%"></div></div><span class="vo-cnt">0 votos</span></button>
+        <button class="vote-opt" onclick="vote('v2',3)"><span class="vo-lbl">Web y portfolio sin código</span><div class="vo-bar"><div class="vo-fill" style="width:0%"></div></div><span class="vo-cnt">0 votos</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── VIDEO FINAL ── -->
+<div class="blk rev" id="b-video">
+  <div class="blk-side">
+    <span class="side-tag t-vid">Video · Producción</span>
+    <p class="side-time">0:10 – 0:45</p>
+    <p class="side-title">Generación de video para entregables finales</p>
+    <div class="side-tools">
+      <span class="tp fm">Seedance 2.0</span><span class="tp fm">Higgsfield</span><span class="tp fm">Kling AI</span><span class="tp fm">Runway Gen-3</span><span class="tp fm">Luma Dream Machine</span><span class="tp pd">Sora</span><span class="tp fr">NanoBanana</span>
+    </div>
+  </div>
+  <div class="blk-main">
+    <p style="font-family:var(--mono);font-size:.62rem;color:var(--mid);margin-bottom:2.5rem;text-transform:uppercase;letter-spacing:.1em;">Del prompt al entregable con calidad de producción real</p>
+    <div class="clist">
+      <div class="ci"><span class="ci-n">01</span><div class="ci-t"><strong>Seedance 2.0: la clave absoluta ahora mismo.</strong> Es cara pero a día de hoy es la referencia en calidad de video generado. Coherencia temporal, movimiento natural, control de cámara. Si solo puedes recomendar una herramienta de video para producción real, es esta.</div></div>
+      <div class="ci"><span class="ci-n">02</span><div class="ci-t"><strong>Higgsfield: resultados directamente usables.</strong> Output de nivel profesional que se integra en piezas finales sin postproducción adicional.</div></div>
+      <div class="ci"><span class="ci-n">03</span><div class="ci-t"><strong>Flujo imagen → video.</strong> Midjourney para el frame clave → animar con Kling, Runway o Luma → Sora para plates de fondo de alta calidad cinematográfica.</div></div>
+      <div class="ci"><span class="ci-n">04</span><div class="ci-t"><strong>NanoBanana en Flow: generaciones ilimitadas y gratuitas.</strong> Para iterar y experimentar sin preocuparse por créditos.</div></div>
+      <div class="ci"><span class="ci-n">05</span><div class="ci-t"><strong>Loops y texturas para instalaciones.</strong> Pika Labs para bucles visuales estilizados. Ideal para proyecciones.</div></div>
+    </div>
+    <div class="hl">
+      <p class="hl-l">Flujo recomendado</p>
+      <p class="hl-t" style="font-size:clamp(1rem,1.8vw,1.8rem);line-height:1.5;">Midjourney (frame clave) → Topaz → <em>Seedance 2.0</em> → After Effects</p>
+    </div>
+  </div>
+</div>
+
+<!-- FULLBLEED: Seedance -->
+<div class="fullbleed h80 rev">
+  <div class="fb-placeholder">
+    <span class="fb-label">Seedance 2.0 · Ejemplo propio</span>
+    <span class="fb-sub">Aquí va el frame o thumbnail del video más impactante generado con Seedance. O embed de YouTube.</span>
+  </div>
+  <span class="fb-corner tl">(fig.04) · Seedance 2.0 · Producción real</span>
+  <span class="fb-corner tr">La referencia absoluta en video IA ahora mismo</span>
+  <span class="fb-corner bl">→ Sustituir por frame o video propio</span>
+</div>
+<div class="wrap">
+  <div class="fb-caption"><span class="fb-cap-l">(fig.04) · Video generado con Seedance 2.0</span><span class="fb-cap-r">Pega aquí embed o link</span></div>
+</div>
+
+<!-- comparativa grid -->
+<div class="blk" style="min-height:auto;border-top:none">
+  <div class="blk-side" style="position:static;height:auto;border-right:1px solid var(--line)">
+    <span class="side-tag t-vid">Comparativa</span>
+    <p class="side-title">Herramientas de video</p>
+  </div>
+  <div class="blk-main">
+    <div class="img-grid ig-3">
+      <div class="img-slot vid"><div class="sl-ico">▶</div><span class="sl-lbl">Higgsfield · ejemplo</span></div>
+      <div class="img-slot vid"><div class="sl-ico">▶</div><span class="sl-lbl">Kling AI · ejemplo</span></div>
+      <div class="img-slot vid"><div class="sl-ico">▶</div><span class="sl-lbl">Runway Gen-3</span></div>
+    </div>
+    <div class="proj-slot"><span class="ps-ico">＋</span><span class="ps-lbl">Proyecto personal de video con IA</span><span class="ps-sub">Añade aquí un clip, GIF o link a un proyecto real</span></div>
+  </div>
+</div>
+
+<!-- demo nanobanana -->
+<div class="blk rev" style="min-height:auto">
+  <div class="blk-side" style="position:static;height:auto">
+    <span class="side-tag t-live">● Demo en vivo</span>
+    <p class="side-title">NanoBanana en Flow</p>
+    <div class="side-tools"><span class="tp fr">NanoBanana</span><span class="tp fr">Flow</span></div>
+  </div>
+  <div class="blk-main">
+    <div class="clist">
+      <div class="ci"><span class="ci-n">01</span><div class="ci-t">Generaciones ilimitadas gratuitas. Edición sobre la imagen generada. Product placement en una escena. Demo en directo si el tiempo lo permite.</div></div>
+    </div>
+    <div class="tip"><p class="tip-l">→ Nota</p><p>Si el servicio falla en directo, aprovéchalo. "¿Por qué no debemos depender de un solo proveedor?" es una de las lecciones más importantes.</p></div>
+  </div>
+</div>
+
+
+<!-- ── 3D ── -->
+<div class="blk rev" id="b-3d">
+  <div class="blk-side">
+    <span class="side-tag t-3d">3D · Compositing</span>
+    <p class="side-time">0:45 – 1:00</p>
+    <p class="side-title">Gaussian Splatting y 3D creativo</p>
+    <div class="side-tools">
+      <span class="tp fr">Luma AI Splat</span><span class="tp fm">Polycam</span><span class="tp fm">Meshy.ai</span><span class="tp fr">Blender</span>
+    </div>
+  </div>
+  <div class="blk-main">
+    <div class="clist">
+      <div class="ci"><span class="ci-n">01</span><div class="ci-t"><strong>Gaussian Splatting.</strong> Escanear un espacio real con el móvil → volumen 3D fotorrealista. Luma AI (gratuito). Polycam para objetos con textura compleja.</div></div>
+      <div class="ci"><span class="ci-n">02</span><div class="ci-t"><strong>Meshes 3D desde imagen.</strong> Meshy.ai → importar a Blender → colocar en escena real con iluminación coherente. La IA y el rodaje real fusionados.</div></div>
+      <div class="ci"><span class="ci-n">03</span><div class="ci-t"><strong>Compositing en After Effects.</strong> Profundidad, sombras, iluminación. Plates de IA con video real.</div></div>
+    </div>
+    <div class="img-grid ig-2">
+      <div class="img-slot tall"><div class="sl-ico">⊞</div><span class="sl-lbl">Gaussian Splatting · ejemplo</span><span class="sl-sub">Escaneo propio o compositing 3D + video</span></div>
+      <div class="img-slot tall"><div class="sl-ico">▶</div><span class="sl-lbl">Video · Luma AI</span><span class="sl-sub">Link a video del proceso</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── REAL TIME ── -->
+<div class="blk rev">
+  <div class="blk-side">
+    <span class="side-tag t-live">Real Time</span>
+    <p class="side-time">1:00 – 1:15</p>
+    <p class="side-title">IA en tiempo real e instalaciones</p>
+    <div class="side-tools">
+      <span class="tp fm">TouchDesigner</span><span class="tp fr">ComfyUI</span><span class="tp fr">AudioCraft (Meta)</span>
+    </div>
+  </div>
+  <div class="blk-main">
+    <div class="clist">
+      <div class="ci"><span class="ci-n">01</span><div class="ci-t"><strong>TouchDesigner + IA.</strong> Conectar la salida de ComfyUI a TouchDesigner para visuales audioreactivos en directo. El setup de instalaciones interactivas.</div></div>
+      <div class="ci"><span class="ci-n">02</span><div class="ci-t"><strong>Frames en bucle → instalación reactiva.</strong> Generar frames en bucle → input en TouchDesigner → la imagen responde al sonido o al movimiento del público.</div></div>
+      <div class="ci"><span class="ci-n">03</span><div class="ci-t"><strong>AudioCraft de Meta.</strong> Open source, gratuito, local. Genera efectos de sonido y música desde texto. Sin límites de uso.</div></div>
+    </div>
+    <div class="img-grid ig-2">
+      <div class="img-slot"><div class="sl-ico">⊞</div><span class="sl-lbl">Instalación TD + IA · referencia</span></div>
+      <div class="img-slot"><div class="sl-ico">▶</div><span class="sl-lbl">Video de ejemplo</span><span class="sl-sub">Link a proyecto propio o referencia</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── WEB Y PORTFOLIO ── -->
+<div class="blk rev" id="b-web">
+  <div class="blk-side">
+    <span class="side-tag t-web">Web · Portfolio</span>
+    <p class="side-time">1:15 – 1:30</p>
+    <p class="side-title">Web, portfolio y deepfakes éticos</p>
+    <div class="side-tools">
+      <span class="tp fr">GitHub Pages</span><span class="tp fr">Are.na</span><span class="tp fm">Claude</span><span class="tp fm">Cursor</span><span class="tp fm">HeyGen</span>
+    </div>
+  </div>
+  <div class="blk-main">
+    <div class="clist">
+      <div class="ci"><span class="ci-n">01</span><div class="ci-t"><strong>Caso real: la web de Mateo.</strong> GitHub Pages (gratis), HTML generado con Claude, imágenes en Are.na. Coste: 0€. → <a href="https://toro-bravo.github.io/" target="_blank" style="color:var(--blue)">toro-bravo.github.io</a></div></div>
+      <div class="ci"><span class="ci-n">02</span><div class="ci-t"><strong>Claude conectado a Blender y la suite Adobe.</strong> Vía MCP, Claude controla directamente Blender, Photoshop o After Effects. Diriges software profesional con lenguaje natural. Todavía experimental, pero el concepto cambia todo.</div></div>
+      <div class="ci"><span class="ci-n">03</span><div class="ci-t"><strong>Deepfakes creativos.</strong> HeyGen y Hedra para campañas, arte conceptual, ficción. El límite: consentimiento, transparencia y declaración de uso con el cliente.</div></div>
+      <div class="ci"><span class="ci-n">04</span><div class="ci-t"><strong>Ética y transparencia.</strong> Cuándo y cómo declarar el uso de IA. El riesgo de proyectos sin autoría real.</div></div>
+    </div>
+
+    <!-- fullbleed dentro del main: web -->
+    <div class="fullbleed h50 rev" style="margin:3rem 0">
+      <div class="fb-placeholder">
+        <span class="fb-label">Captura web · toro-bravo.github.io</span>
+        <span class="fb-sub">Screenshot de la web propia. Mostrar en directo durante la clase.</span>
+      </div>
+      <span class="fb-corner tl">(fig.05) · Portfolio web · Coste 0€</span>
+      <span class="fb-corner br">Hecho con Claude · GitHub Pages · Are.na</span>
+    </div>
+
+    <div class="inter">
+      <div class="inter-head"><span class="inter-badge">● Dilema · sin respuesta correcta</span><span class="inter-title">¿Usarías IA en un proyecto de cliente sin decírselo?</span></div>
+      <div class="wall-area"><div class="wall-row"><input class="wall-in" id="w5-in" type="text" placeholder="Comparte tu posición de forma anónima..." maxlength="120"><button class="wall-btn" onclick="post('w5')">Enviar ↵</button></div><div class="wall-posts" id="w5-posts"></div></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Q&A CLASE 2 -->
+<div class="qa" id="qa2">
+  <p class="qa-meta">Clase 2 · 1:30 – 2:00</p>
+  <h3>Q&amp;A<br><em>+ Cierre</em></h3>
+  <div class="qa-items">
+    <div class="qa-item"><span class="qa-dot">→</span><span>Q&A abierto y demos en vivo según interés del grupo</span></div>
+    <div class="qa-item"><span class="qa-dot">→</span><span>Mostrar portfolio web en directo: "esto lo hice con IA y sin saber código"</span></div>
+    <div class="qa-item"><span class="qa-dot">→</span><span>Compartir repositorio de recursos: este documento, Notion o Are.na</span></div>
+    <div class="qa-item"><span class="qa-dot">→</span><span>"La IA no te va a quitar el trabajo. Te lo quita quien sabe usarla mejor que tú."</span></div>
+  </div>
+  <div class="inter" style="margin-top:3rem">
+    <div class="inter-head"><span class="inter-badge">● Cierre</span><span class="inter-title">¿Con qué herramienta vas a experimentar esta semana?</span></div>
+    <div class="wall-area dk"><div class="wall-row"><input class="wall-in" id="w6-in" type="text" placeholder="Escribe tu próximo paso..." maxlength="100"><button class="wall-btn" onclick="post('w6')" style="background:var(--blue)">Enviar ↵</button></div><div class="wall-posts" id="w6-posts"></div></div>
+  </div>
+  <div class="inter" style="margin-top:1rem">
+    <div class="inter-head"><span class="inter-badge">● Reflexión final · sin respuesta correcta</span><span class="inter-title">¿Cuál es el límite que la IA no puede cruzar en tu trabajo?</span></div>
+    <div class="wall-area dk"><div class="wall-row"><input class="wall-in" id="w7-in" type="text" placeholder="Escribe tu reflexión..." maxlength="140"><button class="wall-btn" onclick="post('w7')" style="background:var(--blue)">Enviar ↵</button></div><div class="wall-posts" id="w7-posts"></div></div>
+  </div>
+</div>
+
+
+<!-- ══════════════ FULLBLEED AVANCES ══════════════ -->
+<div class="fullbleed h50">
+  <div class="fb-placeholder">
+    <span class="fb-label">Imagen de avances · Captura o frame impactante</span>
+    <span class="fb-sub">Una imagen que represente el salto tecnológico del momento</span>
+  </div>
+  <span class="fb-corner tl">Lo que está pasando ahora mismo</span>
+  <span class="fb-corner br">Mayo 2025</span>
+</div>
+
+
+<!-- ══════════════ AVANCES ══════════════ -->
+<section id="avances">
+<div style="padding:8rem 2.5rem 3rem;border-bottom:1px solid var(--line)">
+  <p style="font-family:var(--mono);font-size:.62rem;color:var(--mid);text-transform:uppercase;letter-spacing:.16em;margin-bottom:1.5rem">Lo que está pasando ahora mismo</p>
+  <h2 style="font-family:var(--serif);font-size:clamp(3.5rem,8vw,8rem);line-height:.86;font-weight:400;letter-spacing:-.02em">Avances que<br><em>cambian</em><br>las reglas</h2>
+</div>
+
+<div class="av-grid rev">
+  <div class="av-card"><p class="av-tag">● Modelo · Video</p><p class="av-title">Seedance 2.0</p><p class="av-desc">La referencia absoluta en generación de video ahora mismo. Coherencia temporal, movimiento natural, control de cámara. Cara, pero el salto cualitativo justifica la inversión para producción real.</p></div>
+  <div class="av-card"><p class="av-tag">● Imagen · 3D · Jugable</p><p class="av-title">Imagen → Mundo 3D jugable</p><p class="av-desc">World Labs de Fei-Fei Li: una imagen estática se convierte en un entorno 3D navegable en tiempo real. Sube una foto, entra dentro. El futuro del worldbuilding sin modelado.</p></div>
+  <div class="av-card"><p class="av-tag">● LLM · Integración</p><p class="av-title">Claude + Blender / Suite Adobe</p><p class="av-desc">Vía MCP, Claude puede controlar directamente Blender, Photoshop o After Effects. Diriges software profesional con lenguaje natural. El siguiente nivel de la dirección de arte asistida.</p></div>
+  <div class="av-card"><p class="av-tag">● Audio · Video</p><p class="av-title">Veo 3 (Google)</p><p class="av-desc">El primer modelo de video que genera audio nativo sincronizado. Efectos de sonido, música y diálogo coherentes con la imagen. Producción end-to-end con IA.</p></div>
+  <div class="av-card"><p class="av-tag">● Gratis · Ilimitado</p><p class="av-title">NanoBanana en Flow</p><p class="av-desc">Generaciones ilimitadas y gratuitas. Edición sobre imagen generada, product placement, storyboards. La herramienta de entrada sin fricción de créditos.</p></div>
+  <div class="av-card"><p class="av-tag">● Cinema · Cámara</p><p class="av-title">Cinema Studio</p><p class="av-desc">Lenguaje cinematográfico en los prompts: cámara, lentes, movimientos, iluminación. La diferencia entre "foto de una persona" y "Fujifilm X-T4, 35mm, flash directo" es brutal.</p></div>
+  <div class="av-card"><p class="av-tag">● Video · Calidad</p><p class="av-title">Higgsfield</p><p class="av-desc">Output de nivel profesional integrable directamente en piezas finales. Una de las pocas herramientas donde el resultado llega a producción real sin postproducción adicional.</p></div>
+  <div class="av-card"><p class="av-tag">● Música · Licencia</p><p class="av-title">Artlist AI</p><p class="av-desc">Generación musical con licencias claras. El IP del audio importa en producciones de cliente. La alternativa legal a Suno cuando el proyecto va a una campaña real.</p></div>
+</div>
+<div style="padding:0 2.5rem 4rem">
+  <div class="proj-slot"><span class="ps-ico">＋</span><span class="ps-lbl">Avance adicional · añadir antes de la clase</span><span class="ps-sub">El avance más reciente que hayas descubierto</span></div>
+</div>
+</section>
+
+
+<!-- ══════════════ RECURSOS ══════════════ -->
+<section id="recursos">
+<div style="padding:8rem 2.5rem 3rem;border-bottom:1px solid var(--line)">
+  <p style="font-family:var(--mono);font-size:.62rem;color:var(--mid);text-transform:uppercase;letter-spacing:.16em;margin-bottom:1.5rem">Documento completo de recursos</p>
+  <h2 style="font-family:var(--serif);font-size:clamp(3.5rem,8vw,8rem);line-height:.86;font-weight:400;letter-spacing:-.02em">Todas las<br><em>herramientas</em></h2>
+  <div class="legend" style="margin-top:2.5rem">
+    <div class="legend-item"><div class="ld" style="background:#2a8a6e"></div>Gratuito</div>
+    <div class="legend-item"><div class="ld" style="background:#b07a25"></div>Freemium</div>
+    <div class="legend-item"><div class="ld" style="background:#0000ff"></div>De pago</div>
+  </div>
+</div>
+
+<div class="res-sec rev"><h3>Referencias y búsqueda visual</h3><p class="res-sub">El punto de partida. La referencia es el prompt.</p>
+<div class="tool-grid">
+  <div class="tc"><a href="https://www.are.na" target="_blank"><span class="tc-badge fr">Gratis</span><p class="tc-name">Are.na</p><p class="tc-desc">Gestor visual de referencias por bloques. Sin algoritmo. Tableros por proyecto.</p></a></div>
+  <div class="tc"><a href="https://www.pinterest.com" target="_blank"><span class="tc-badge fr">Gratis</span><p class="tc-name">Pinterest</p><p class="tc-desc">Rastreador inverso visual. Tableros y búsqueda por imagen.</p></a></div>
+  <div class="tc"><a href="https://lens.google.com" target="_blank"><span class="tc-badge fr">Gratis</span><p class="tc-name">Google Lens</p><p class="tc-desc">Búsqueda inversa. Encuentra el origen y variaciones de cualquier imagen.</p></a></div>
+  <div class="tc"><a href="https://film.ai" target="_blank"><span class="tc-badge fm">Freemium</span><p class="tc-name">FilmAI</p><p class="tc-desc">Referencias cinematográficas por estética, paleta, director o DP.</p></a></div>
+  <div class="tc"><a href="https://everyframeapainting.tumblr.com" target="_blank"><span class="tc-badge fr">Gratis</span><p class="tc-name">Every Frame a Painting</p><p class="tc-desc">Análisis visuales de cine. Composición, luz, color.</p></a></div>
+</div></div>
+
+<div class="res-sec rev"><h3>Generación de imagen</h3><p class="res-sub">Concept art, storyboards y variaciones de estilo.</p>
+<div class="tool-grid">
+  <div class="tc"><a href="https://www.midjourney.com" target="_blank"><span class="tc-badge fm">Freemium</span><p class="tc-name">Midjourney</p><p class="tc-desc">El estándar. Arrastra imágenes como referencia. Genera variaciones y deja que mejore.</p></a></div>
+  <div class="tc"><a href="https://www.useflow.app" target="_blank"><span class="tc-badge fr">Gratis</span><p class="tc-name">NanoBanana / Flow</p><p class="tc-desc">Generaciones ilimitadas y gratuitas. Edición sobre imagen generada. Product placement.</p></a></div>
+  <div class="tc"><a href="https://krea.ai" target="_blank"><span class="tc-badge fm">Freemium</span><p class="tc-name">Krea AI</p><p class="tc-desc">Sketch a render en tiempo real. Boceto → imagen con estética definida.</p></a></div>
+  <div class="tc"><a href="https://flair.ai" target="_blank"><span class="tc-badge fm">Freemium</span><p class="tc-name">Flair.ai</p><p class="tc-desc">Insertar productos en escenas generadas. Mockups de producto accesibles.</p></a></div>
+  <div class="tc"><a href="https://github.com/comfyanonymous/ComfyUI" target="_blank"><span class="tc-badge fr">Gratis</span><p class="tc-name">ComfyUI</p><p class="tc-desc">Flujo de nodos para Stable Diffusion. Local, sin límites, curva media-alta.</p></a></div>
+  <div class="tc"><a href="https://firefly.adobe.com" target="_blank"><span class="tc-badge fm">Freemium</span><p class="tc-name">Adobe Firefly</p><p class="tc-desc">Generative Fill integrado en Photoshop. Extender, eliminar, componer.</p></a></div>
+</div></div>
+
+<div class="res-sec rev"><h3>Generación de video</h3><p class="res-sub">Del frame clave a la pieza final con calidad de producción.</p>
+<div class="tool-grid">
+  <div class="tc"><a href="https://seedance.ai" target="_blank"><span class="tc-badge fm">Freemium</span><p class="tc-name">Seedance 2.0</p><p class="tc-desc">La referencia absoluta. Coherencia temporal y calidad de producción real.</p></a></div>
+  <div class="tc"><a href="https://higgsfield.ai" target="_blank"><span class="tc-badge fm">Freemium</span><p class="tc-name">Higgsfield</p><p class="tc-desc">Output profesional integrable directamente en piezas finales.</p></a></div>
+  <div class="tc"><a href="https://klingai.com" target="_blank"><span class="tc-badge fm">Freemium</span><p class="tc-name">Kling AI</p><p class="tc-desc">Movimientos naturales y realistas. Personajes y animación de escenas.</p></a></div>
+  <div class="tc"><a href="https://runwayml.com" target="_blank"><span class="tc-badge fm">Freemium</span><p class="tc-name">Runway Gen-3</p><p class="tc-desc">Control de cámara, estética cinematográfica. Plataforma integral.</p></a></div>
+  <div class="tc"><a href="https://lumalabs.ai/dream-machine" target="_blank"><span class="tc-badge fm">Freemium</span><p class="tc-name">Luma Dream Machine</p><p class="tc-desc">Animaciones fluidas. Movimientos suaves de cámara.</p></a></div>
+  <div class="tc"><a href="https://sora.com" target="_blank"><span class="tc-badge pd">De pago</span><p class="tc-name">Sora</p><p class="tc-desc">Calidad hiperrealista. Ideal para plates de fondo de alto nivel.</p></a></div>
+  <div class="tc"><a href="https://pika.art" target="_blank"><span class="tc-badge fm">Freemium</span><p class="tc-name">Pika Labs</p><p class="tc-desc">Loops estilizados. Ideal para proyecciones e instalaciones.</p></a></div>
+  <div class="tc"><a href="https://deepmind.google/technologies/veo/" target="_blank"><span class="tc-badge pd">De pago</span><p class="tc-name">Veo 3 (Google)</p><p class="tc-desc">Video con audio nativo sincronizado.</p></a></div>
+  <div class="tc"><a href="https://www.useflow.app" target="_blank"><span class="tc-badge fr">Gratis</span><p class="tc-name">NanoBanana / Flow</p><p class="tc-desc">Generaciones ilimitadas gratuitas. Edición sobre imagen. Product placement.</p></a></div>
+</div></div>
+
+<div class="res-sec rev"><h3>3D, escaneo y Gaussian Splatting</h3><p class="res-sub">Del espacio real al volumen 3D. Sin studio.</p>
+<div class="tool-grid">
+  <div class="tc"><a href="https://lumalabs.ai" target="_blank"><span class="tc-badge fr">Gratis</span><p class="tc-name">Luma AI (Splat)</p><p class="tc-desc">Escanear un espacio con el móvil → volumen 3D fotorrealista. Gratis en web.</p></a></div>
+  <div class="tc"><a href="https://poly.cam" target="_blank"><span class="tc-badge fm">Freemium</span><p class="tc-name">Polycam</p><p class="tc-desc">Escaneo 3D con móvil. Meshes limpios para compositing.</p></a></div>
+  <div class="tc"><a href="https://www.meshy.ai" target="_blank"><span class="tc-badge fm">Freemium</span><p class="tc-name">Meshy.ai</p><p class="tc-desc">Modelos 3D desde imagen o texto. Exporta .glb, .obj, .fbx.</p></a></div>
+  <div class="tc"><a href="https://www.blender.org" target="_blank"><span class="tc-badge fr">Gratis</span><p class="tc-name">Blender</p><p class="tc-desc">Software 3D profesional y gratuito. Importa modelos IA, ilumina y renderiza.</p></a></div>
+</div></div>
+
+<div class="res-sec rev"><h3>Audio, voz y música</h3><p class="res-sub">Identidad sonora sin estudio de grabación.</p>
+<div class="tool-grid">
+  <div class="tc"><a href="https://elevenlabs.io" target="_blank"><span class="tc-badge fm">Freemium</span><p class="tc-name">ElevenLabs</p><p class="tc-desc">El estándar: voz en off, clonación y lip sync desde la misma plataforma.</p></a></div>
+  <div class="tc"><a href="https://suno.com" target="_blank"><span class="tc-badge fm">Freemium</span><p class="tc-name">Suno AI</p><p class="tc-desc">Música completa + versiones de canciones existentes. Plan gratuito generoso.</p></a></div>
+  <div class="tc"><a href="https://www.udio.com" target="_blank"><span class="tc-badge fm">Freemium</span><p class="tc-name">Udio</p><p class="tc-desc">Más control sobre el estilo musical. Géneros específicos.</p></a></div>
+  <div class="tc"><a href="https://audiocraft.metademolab.com" target="_blank"><span class="tc-badge fr">Gratis</span><p class="tc-name">AudioCraft (Meta)</p><p class="tc-desc">Open source. Música y efectos desde texto. Local, sin límites.</p></a></div>
+  <div class="tc"><a href="https://artlist.io" target="_blank"><span class="tc-badge fm">Freemium</span><p class="tc-name">Artlist AI</p><p class="tc-desc">Generación musical con licencias limpias. Para producciones de cliente.</p></a></div>
+  <div class="tc"><a href="https://www.heygen.com" target="_blank"><span class="tc-badge fm">Freemium</span><p class="tc-name">HeyGen</p><p class="tc-desc">Lip sync y deepfake de avatar. Presentaciones con personaje virtual.</p></a></div>
+</div></div>
+
+<div class="res-sec rev"><h3>Postproducción e integración</h3><p class="res-sub">Conectar el material real con las generaciones de IA.</p>
+<div class="tool-grid">
+  <div class="tc"><a href="https://www.adobe.com/products/photoshop.html" target="_blank"><span class="tc-badge pd">De pago</span><p class="tc-name">Photoshop (Firefly)</p><p class="tc-desc">Generative Fill: extender, eliminar, componer. Fundamental para mezclar real + IA.</p></a></div>
+  <div class="tc"><a href="https://www.adobe.com/products/aftereffects.html" target="_blank"><span class="tc-badge pd">De pago</span><p class="tc-name">After Effects</p><p class="tc-desc">Plates de IA + video real. Rotobrush IA, seguimiento, compositing.</p></a></div>
+  <div class="tc"><a href="https://www.blackmagicdesign.com/products/davinciresolve" target="_blank"><span class="tc-badge fr">Gratis</span><p class="tc-name">DaVinci Resolve</p><p class="tc-desc">Edición profesional gratuita. IA integrada para mejora y color grading.</p></a></div>
+  <div class="tc"><a href="https://www.topazlabs.com" target="_blank"><span class="tc-badge pd">De pago</span><p class="tc-name">Topaz Photo / Video AI</p><p class="tc-desc">El estándar para upscaling. Foto hasta 6x, video a 4K. Compra única.</p></a></div>
+  <div class="tc"><a href="https://www.capcut.com" target="_blank"><span class="tc-badge fr">Gratis</span><p class="tc-name">CapCut AI</p><p class="tc-desc">Edición rápida. Subtítulos automáticos, reencuadre, text-to-video.</p></a></div>
+</div></div>
+
+<div class="res-sec rev"><h3>Web y portfolio sin código</h3><p class="res-sub">Una web profesional sin saber programar. Coste: 0€.</p>
+<div class="tool-grid">
+  <div class="tc"><a href="https://pages.github.com" target="_blank"><span class="tc-badge fr">Gratis</span><p class="tc-name">GitHub Pages</p><p class="tc-desc">Hosting gratuito. URL pública profesional. Así funciona la web de Mateo.</p></a></div>
+  <div class="tc"><a href="https://claude.ai" target="_blank"><span class="tc-badge fm">Freemium</span><p class="tc-name">Claude</p><p class="tc-desc">Describe qué quieres → código listo para pegar. Más preciso para tareas complejas.</p></a></div>
+  <div class="tc"><a href="https://cursor.sh" target="_blank"><span class="tc-badge fm">Freemium</span><p class="tc-name">Cursor</p><p class="tc-desc">Editor de código con IA. Para quien quiere aprender HTML con asistencia.</p></a></div>
+  <div class="tc"><a href="https://www.framer.com" target="_blank"><span class="tc-badge fm">Freemium</span><p class="tc-name">Framer</p><p class="tc-desc">Webs de diseño profesional con IA. Más control que Squarespace.</p></a></div>
+  <div class="tc"><a href="https://readymag.com" target="_blank"><span class="tc-badge fm">Freemium</span><p class="tc-name">Readymag</p><p class="tc-desc">Portfolios de alto nivel estético. Muy usado en diseño y moda.</p></a></div>
+  <div class="tc"><a href="https://gamma.app" target="_blank"><span class="tc-badge fm">Freemium</span><p class="tc-name">Gamma.app</p><p class="tc-desc">Decks completos desde texto. Ideal para pitches rápidos.</p></a></div>
+</div></div>
+</section>
+
+
+<!-- FOOTER -->
+<footer>
+  <p class="ft-big">IA <span>×</span><br><em>Arte</em></p>
+  <div class="ft-info">
+    ESDI · Máster en Dirección de Arte · Mayo 2025<br>
+    Ponente: Mateo · Profesor: Virgili Jubero<br>
+    <a href="https://toro-bravo.github.io/" target="_blank">toro-bravo.github.io</a><br><br>
+    Esta web se actualiza.<br>
+    Las herramientas cambian rápido.
+  </div>
+</footer>
+
+<script>
+window.addEventListener('scroll',()=>{
+  const t=document.documentElement.scrollHeight-window.innerHeight;
+  document.getElementById('prog').style.width=(window.scrollY/t*100)+'%';
+});
+
+const LABELS={
+  hero:'IA × Arte · ESDI','intro-inter':'Intro','contexto':'Contexto',
+  clase1:'Sesión 01 · Preproducción',
+  'b-ref':'C1 / Referencias','b-budget':'C1 / Presupuesto','b-img':'C1 / Imagen',
+  qa1:'Q&A · Clase 1',clase2:'Sesión 02 · Producción',
+  'b-video':'C2 / Video','b-3d':'C2 / 3D','b-web':'C2 / Web',
+  qa2:'Q&A · Clase 2',avances:'Avances',recursos:'Recursos'
+};
+const navLinks=document.querySelectorAll('.nav-links a');
+const navLoc=document.getElementById('nav-loc');
+const secObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting&&LABELS[e.target.id]){
+      navLoc.textContent=LABELS[e.target.id];
+      navLinks.forEach(a=>a.classList.toggle('act',a.getAttribute('href')==='#'+e.target.id));
+    }
+  });
+},{rootMargin:'-30% 0px -60% 0px'});
+document.querySelectorAll('[id]').forEach(el=>secObs.observe(el));
+
+const revObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');revObs.unobserve(e.target);}});
+},{threshold:0.04});
+document.querySelectorAll('.rev').forEach(el=>revObs.observe(el));
+
+function post(id){
+  const inp=document.getElementById(id+'-in');
+  const box=document.getElementById(id+'-posts');
+  const t=inp.value.trim();
+  if(!t)return;
+  const el=document.createElement('div');
+  el.className='wall-post';el.textContent=t;
+  box.appendChild(el);inp.value='';inp.focus();
+}
+document.querySelectorAll('.wall-in').forEach(inp=>{
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')post(inp.id.replace('-in',''));});
+});
+
+const VD={};
+function vote(id,i){
+  if(!VD[id])VD[id]={};
+  const prev=VD[id].sel;
+  if(prev===i){VD[id][i]=Math.max(0,(VD[id][i]||0)-1);delete VD[id].sel;}
+  else{
+    if(prev!==undefined)VD[id][prev]=Math.max(0,(VD[id][prev]||0)-1);
+    VD[id][i]=(VD[id][i]||0)+1;VD[id].sel=i;
+  }
+  const opts=document.getElementById(id).querySelectorAll('.vote-opt');
+  let tot=0;opts.forEach((_,j)=>tot+=(VD[id][j]||0));
+  opts.forEach((opt,j)=>{
+    const c=VD[id][j]||0;
+    opt.classList.toggle('sel',j===VD[id].sel);
+    opt.querySelector('.vo-fill').style.width=(tot>0?c/tot*100:0)+'%';
+    opt.querySelector('.vo-cnt').textContent=c+(c===1?' voto':' votos');
+  });
+}
+</script>
+</body>
+</html>
