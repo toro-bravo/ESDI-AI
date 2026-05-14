@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>IA × Dirección de Arte — ESDI</title>
+<link rel="icon" type="image/png" href="https://png.pngtree.com/png-clipart/20240912/original/pngtree-brain-in-head-in-pixel-art-style-png-image_15996749.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
 <style>
@@ -503,8 +504,8 @@ footer{padding:6rem 2.5rem;display:grid;grid-template-columns:1fr 1fr;gap:4rem;b
       <div class="ci"><span class="ci-n">03</span><div class="ci-t"><strong>Animáticas desde imágenes.</strong> Runway y Kling AI para animar frames estáticos antes de comprometerse con la animación final.</div></div>
     </div>
     <div class="img-grid ig-2">
-      <div class="img-slot vid" style="grid-column:1/-1;aspect-ratio:auto;height:360px">
-        <img src="https://d2w9rnfcy7mm78.cloudfront.net/46118699/original_45abb05ee5a1ae0718db0e2635d6039a.png?1778686332?bc=0" alt="Storyboard IA ejemplo">
+      <div class="img-slot vid" style="grid-column:1/-1;aspect-ratio:auto;height:auto;min-height:300px;background:var(--ink)">
+        <img src="https://d2w9rnfcy7mm78.cloudfront.net/46118699/original_45abb05ee5a1ae0718db0e2635d6039a.png?1778686332?bc=0" alt="Storyboard IA ejemplo" style="position:relative;width:100%;height:auto;object-fit:contain;display:block">
       </div>
     </div>
   </div>
@@ -656,31 +657,82 @@ footer{padding:6rem 2.5rem;display:grid;grid-template-columns:1fr 1fr;gap:4rem;b
 
 <!-- FULLBLEED: Seedance -->
 <div class="fullbleed h80 rev">
-  <div class="fb-placeholder">
-    <span class="fb-label">Seedance 2.0 · Ejemplo propio</span>
-    <span class="fb-sub">Aquí va el frame o thumbnail del video más impactante generado con Seedance. O embed de YouTube.</span>
-  </div>
+  <video autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+    <source src="https://attachments.are.na/46146426/b4d5ba62d1995cddc6a648d622dfb573.mp4?1778767136" type="video/mp4">
+  </video>
   <span class="fb-corner tl">(fig.04) · Seedance 2.0 · Producción real</span>
   <span class="fb-corner tr">La referencia absoluta en video IA ahora mismo</span>
-  <span class="fb-corner bl">→ Sustituir por frame o video propio</span>
 </div>
 <div class="wrap">
-  <div class="fb-caption"><span class="fb-cap-l">(fig.04) · Video generado con Seedance 2.0</span><span class="fb-cap-r">Pega aquí embed o link</span></div>
+  <div class="fb-caption"><span class="fb-cap-l">(fig.04) · Video generado con Seedance 2.0</span><span class="fb-cap-r">Seedance 2.0</span></div>
 </div>
 
 <!-- comparativa grid -->
 <div class="blk" style="min-height:auto;border-top:none">
   <div class="blk-side" style="position:static;height:auto;border-right:1px solid var(--line)">
     <span class="side-tag t-vid">Comparativa</span>
-    <p class="side-title">Herramientas de video</p>
+    <p class="side-title">El mismo prompt, diferentes IAs</p>
+    <p class="side-time">Mezclar lo mejor de cada generación</p>
   </div>
   <div class="blk-main">
+    <p style="font-family:var(--mono);font-size:.62rem;color:var(--mid);margin-bottom:1.5rem;text-transform:uppercase;letter-spacing:.1em;">Mismo prompt · 3 herramientas · 1 resultado final</p>
     <div class="img-grid ig-3">
-      <div class="img-slot vid"><div class="sl-ico">▶</div><span class="sl-lbl">Higgsfield · ejemplo</span></div>
-      <div class="img-slot vid"><div class="sl-ico">▶</div><span class="sl-lbl">Kling AI · ejemplo</span></div>
-      <div class="img-slot vid"><div class="sl-ico">▶</div><span class="sl-lbl">Runway Gen-3</span></div>
+      <div class="img-slot vid" style="aspect-ratio:auto;height:260px">
+        <video autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+          <source src="https://attachments.are.na/46146651/7455570cc455937a214f551e141ae654.mp4?1778767770" type="video/mp4">
+        </video>
+        <span style="position:absolute;bottom:.6rem;left:.6rem;font-family:var(--mono);font-size:.55rem;color:rgba(255,255,255,.7);background:rgba(0,0,0,.5);padding:.2rem .5rem;letter-spacing:.08em">Midjourney Video</span>
+      </div>
+      <div class="img-slot vid" style="aspect-ratio:auto;height:260px">
+        <video autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+          <source src="https://attachments.are.na/46146830/0fe855c79e40699a54cfdc667a168622.mp4?1778768093" type="video/mp4">
+        </video>
+        <span style="position:absolute;bottom:.6rem;left:.6rem;font-family:var(--mono);font-size:.55rem;color:rgba(255,255,255,.7);background:rgba(0,0,0,.5);padding:.2rem .5rem;letter-spacing:.08em">Luma Dream Machine</span>
+      </div>
+      <div class="img-slot vid" style="aspect-ratio:auto;height:260px">
+        <video autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+          <source src="https://attachments.are.na/46146939/73193fa2a49d048757a988b6bc4273da.mp4?1778768324" type="video/mp4">
+        </video>
+        <span style="position:absolute;bottom:.6rem;left:.6rem;font-family:var(--mono);font-size:.55rem;color:rgba(255,255,255,.7);background:rgba(0,0,0,.5);padding:.2rem .5rem;letter-spacing:.08em">Mezcla + CGI Elements</span>
+      </div>
     </div>
-    <div class="proj-slot"><span class="ps-ico">＋</span><span class="ps-lbl">Proyecto personal de video con IA</span><span class="ps-sub">Añade aquí un clip, GIF o link a un proyecto real</span></div>
+
+    <hr class="rule-wide">
+    <p style="font-family:var(--serif);font-size:1.5rem;margin-bottom:.5rem;font-weight:400">Cambiar textura del vídeo</p>
+    <p style="font-family:var(--mono);font-size:.62rem;color:var(--mid);margin-bottom:1.5rem;text-transform:uppercase;letter-spacing:.1em;">Video real → textura repintada con Kling 3.0 · Clic para ver tutorial</p>
+    <div class="img-grid ig-2">
+      <a href="https://www.youtube.com/watch?v=cg_Enkb6d6w" target="_blank" class="img-slot vid" style="aspect-ratio:auto;height:280px;text-decoration:none">
+        <video autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+          <source src="https://attachments.are.na/46147179/051665166050f8e4c4aca8e17b322967.mp4?1778768549" type="video/mp4">
+        </video>
+        <span style="position:absolute;bottom:.6rem;left:.6rem;font-family:var(--mono);font-size:.55rem;color:rgba(255,255,255,.7);background:rgba(0,0,0,.5);padding:.2rem .5rem;letter-spacing:.08em">Video real →</span>
+      </a>
+      <a href="https://www.youtube.com/watch?v=cg_Enkb6d6w" target="_blank" class="img-slot vid" style="aspect-ratio:auto;height:280px;text-decoration:none">
+        <video autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+          <source src="https://attachments.are.na/46147177/8941b8100359a683a83148a7eee3deb2.mp4?1778768549" type="video/mp4">
+        </video>
+        <span style="position:absolute;bottom:.6rem;left:.6rem;font-family:var(--mono);font-size:.55rem;color:rgba(255,255,255,.7);background:rgba(0,0,0,.5);padding:.2rem .5rem;letter-spacing:.08em">← Textura con Kling 3.0</span>
+        <span style="position:absolute;top:.6rem;right:.6rem;font-family:var(--mono);font-size:.55rem;color:rgba(255,255,255,.8);background:rgba(0,0,255,.7);padding:.2rem .5rem;letter-spacing:.08em">↗ Ver tutorial</span>
+      </a>
+    </div>
+
+    <hr class="rule-wide">
+    <p style="font-family:var(--serif);font-size:1.5rem;margin-bottom:.5rem;font-weight:400">Importancia del tratado de la imagen</p>
+    <p style="font-family:var(--mono);font-size:.62rem;color:var(--mid);margin-bottom:1.5rem;text-transform:uppercase;letter-spacing:.1em;">Antes y después de postproducción</p>
+    <div class="img-grid ig-2">
+      <div class="img-slot vid" style="aspect-ratio:auto;height:280px">
+        <video autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+          <source src="https://attachments.are.na/46147290/c62cac0d5a46ddf40205d7d2611cbbc4.mp4?1778768788" type="video/mp4">
+        </video>
+        <span style="position:absolute;bottom:.6rem;left:.6rem;font-family:var(--mono);font-size:.55rem;color:rgba(255,255,255,.7);background:rgba(0,0,0,.5);padding:.2rem .5rem;letter-spacing:.08em">Sin tratar →</span>
+      </div>
+      <div class="img-slot vid" style="aspect-ratio:auto;height:280px">
+        <video autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+          <source src="https://attachments.are.na/46147320/8520204a3c4562e52300173f0f67c3d6.mp4?1778768828" type="video/mp4">
+        </video>
+        <span style="position:absolute;bottom:.6rem;left:.6rem;font-family:var(--mono);font-size:.55rem;color:rgba(255,255,255,.7);background:rgba(0,0,0,.5);padding:.2rem .5rem;letter-spacing:.08em">← Postproducido</span>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -696,6 +748,16 @@ footer{padding:6rem 2.5rem;display:grid;grid-template-columns:1fr 1fr;gap:4rem;b
       <div class="ci"><span class="ci-n">01</span><div class="ci-t">Generaciones ilimitadas gratuitas. Edición sobre la imagen generada. Product placement en una escena. Demo en directo si el tiempo lo permite.</div></div>
     </div>
     <div class="tip"><p class="tip-l">→ Nota</p><p>Si el servicio falla en directo, aprovéchalo. "¿Por qué no debemos depender de un solo proveedor?" es una de las lecciones más importantes.</p></div>
+    <div class="img-grid ig-2">
+      <div class="img-slot" style="aspect-ratio:4/3">
+        <img src="https://d2w9rnfcy7mm78.cloudfront.net/46147388/original_e6fcd2f8f783b583115ec87d5fcaa2ca.jpeg?1778768997?bc=0" alt="Imagen original product placement">
+        <span style="position:absolute;bottom:.6rem;left:.6rem;font-family:var(--mono);font-size:.55rem;color:rgba(255,255,255,.8);background:rgba(0,0,0,.5);padding:.2rem .5rem;letter-spacing:.08em">Original →</span>
+      </div>
+      <div class="img-slot" style="aspect-ratio:4/3">
+        <img src="https://d2w9rnfcy7mm78.cloudfront.net/46147389/original_56520f923ad7592c0855731a765a9d5e.png?1778768998?bc=0" alt="Product placement con NanoBanana">
+        <span style="position:absolute;bottom:.6rem;left:.6rem;font-family:var(--mono);font-size:.55rem;color:rgba(255,255,255,.8);background:rgba(0,0,0,.5);padding:.2rem .5rem;letter-spacing:.08em">← NanoBanana · producto</span>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -716,9 +778,27 @@ footer{padding:6rem 2.5rem;display:grid;grid-template-columns:1fr 1fr;gap:4rem;b
       <div class="ci"><span class="ci-n">02</span><div class="ci-t"><strong>Meshes 3D desde imagen.</strong> Meshy.ai → importar a Blender → colocar en escena real con iluminación coherente. La IA y el rodaje real fusionados.</div></div>
       <div class="ci"><span class="ci-n">03</span><div class="ci-t"><strong>Compositing en After Effects.</strong> Profundidad, sombras, iluminación. Plates de IA con video real.</div></div>
     </div>
+    <p style="font-family:var(--mono);font-size:.62rem;color:var(--mid);margin-bottom:1rem;text-transform:uppercase;letter-spacing:.1em;">Gaussian Splat · ejemplo real</p>
+    <div class="img-grid ig-1" style="margin-bottom:1px">
+      <div class="img-slot" style="aspect-ratio:16/9">
+        <video autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+          <source src="https://attachments.are.na/41582008/648748faf4bc205c43d9ad81cf9b2bbf.mp4?1764883940" type="video/mp4">
+        </video>
+      </div>
+    </div>
+    <hr class="rule-wide">
+    <p style="font-family:var(--mono);font-size:.62rem;color:var(--mid);margin-bottom:1rem;text-transform:uppercase;letter-spacing:.1em;">Mesh 3D · referencia → resultado</p>
     <div class="img-grid ig-2">
-      <div class="img-slot tall"><div class="sl-ico">⊞</div><span class="sl-lbl">Gaussian Splatting · ejemplo</span><span class="sl-sub">Escaneo propio o compositing 3D + video</span></div>
-      <div class="img-slot tall"><div class="sl-ico">▶</div><span class="sl-lbl">Video · Luma AI</span><span class="sl-sub">Link a video del proceso</span></div>
+      <div class="img-slot" style="aspect-ratio:4/3">
+        <img src="https://d2w9rnfcy7mm78.cloudfront.net/46149677/original_58c2ffd0a61b82d0d1ace888cdb39c97.jpeg?1778772985?bc=0" alt="Imagen de referencia para Mesh 3D">
+        <span style="position:absolute;bottom:.6rem;left:.6rem;font-family:var(--mono);font-size:.55rem;color:rgba(255,255,255,.8);background:rgba(0,0,0,.5);padding:.2rem .5rem;letter-spacing:.08em">Referencia →</span>
+      </div>
+      <div class="img-slot" style="aspect-ratio:4/3">
+        <video autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+          <source src="https://attachments.are.na/46149927/d80402d3206d170bf42eaedee1529b82.mp4?1778773460" type="video/mp4">
+        </video>
+        <span style="position:absolute;bottom:.6rem;left:.6rem;font-family:var(--mono);font-size:.55rem;color:rgba(255,255,255,.8);background:rgba(0,0,0,.5);padding:.2rem .5rem;letter-spacing:.08em">← Mesh 3D resultado</span>
+      </div>
     </div>
   </div>
 </div>
@@ -741,8 +821,18 @@ footer{padding:6rem 2.5rem;display:grid;grid-template-columns:1fr 1fr;gap:4rem;b
       <div class="ci"><span class="ci-n">03</span><div class="ci-t"><strong>AudioCraft de Meta.</strong> Open source, gratuito, local. Genera efectos de sonido y música desde texto. Sin límites de uso.</div></div>
     </div>
     <div class="img-grid ig-2">
-      <div class="img-slot"><div class="sl-ico">⊞</div><span class="sl-lbl">Instalación TD + IA · referencia</span></div>
-      <div class="img-slot"><div class="sl-ico">▶</div><span class="sl-lbl">Video de ejemplo</span><span class="sl-sub">Link a proyecto propio o referencia</span></div>
+      <a href="https://www.youtube.com/watch?v=4wpn_3JNaIc&list=PLOFgJyJzo5a01iPAcfIyNzLqbrwbtcisw&index=5" target="_blank" class="img-slot" style="aspect-ratio:16/9;text-decoration:none">
+        <video autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+          <source src="https://attachments.are.na/41258307/126a0fc66f7b1b2e00d712042e168976.mp4?1763664013" type="video/mp4">
+        </video>
+        <span style="position:absolute;bottom:.6rem;left:.6rem;font-family:var(--mono);font-size:.55rem;color:rgba(255,255,255,.8);background:rgba(0,0,255,.6);padding:.2rem .5rem;letter-spacing:.08em">↗ SD + TouchDesigner</span>
+      </a>
+      <div class="img-slot" style="aspect-ratio:16/9">
+        <video autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+          <source src="https://attachments.are.na/46150454/1965c8cd44cd91aab06ada0bc046f78b.mp4?1778774423" type="video/mp4">
+        </video>
+        <span style="position:absolute;bottom:.6rem;left:.6rem;font-family:var(--mono);font-size:.55rem;color:rgba(255,255,255,.8);background:rgba(0,0,0,.5);padding:.2rem .5rem;letter-spacing:.08em">Cámara en tiempo real</span>
+      </div>
     </div>
   </div>
 </div>
@@ -768,10 +858,9 @@ footer{padding:6rem 2.5rem;display:grid;grid-template-columns:1fr 1fr;gap:4rem;b
 
     <!-- fullbleed dentro del main: web -->
     <div class="fullbleed h50 rev" style="margin:3rem 0">
-      <div class="fb-placeholder">
-        <span class="fb-label">Captura web · toro-bravo.github.io</span>
-        <span class="fb-sub">Screenshot de la web propia. Mostrar en directo durante la clase.</span>
-      </div>
+      <video autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+        <source src="https://attachments.are.na/46150546/da63179495b9cd7855e116b0757f306c.mp4?1778774611" type="video/mp4">
+      </video>
       <span class="fb-corner tl">(fig.05) · Portfolio web · Coste 0€</span>
       <span class="fb-corner br">Hecho con Claude · GitHub Pages · Are.na</span>
     </div>
@@ -807,10 +896,7 @@ footer{padding:6rem 2.5rem;display:grid;grid-template-columns:1fr 1fr;gap:4rem;b
 
 <!-- ══════════════ FULLBLEED AVANCES ══════════════ -->
 <div class="fullbleed h50">
-  <div class="fb-placeholder">
-    <span class="fb-label">Imagen de avances · Captura o frame impactante</span>
-    <span class="fb-sub">Una imagen que represente el salto tecnológico del momento</span>
-  </div>
+  <iframe src="https://www.youtube.com/embed/fxMUIRxWQU0?autoplay=1&mute=1&loop=1&playlist=fxMUIRxWQU0&controls=0" style="position:absolute;inset:0;width:100%;height:100%;border:none" allow="autoplay;encrypted-media" allowfullscreen></iframe>
   <span class="fb-corner tl">Lo que está pasando ahora mismo</span>
   <span class="fb-corner br">Mayo 2025</span>
 </div>
