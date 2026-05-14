@@ -965,37 +965,143 @@ const revObs=new IntersectionObserver(entries=>{
 },{threshold:0.04});
 document.querySelectorAll('.rev').forEach(el=>revObs.observe(el));
 
-function post(id){
-  const inp=document.getElementById(id+'-in');
-  const box=document.getElementById(id+'-posts');
-  const t=inp.value.trim();
-  if(!t)return;
-  const el=document.createElement('div');
-  el.className='wall-post';el.textContent=t;
-  box.appendChild(el);inp.value='';inp.focus();
+// ── CONFIGURACIÓN ── Pega aquí tu URL después de deployar el Apps Script
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwwhEZiAlUoaHAUhhhuBRGKNdbrgbIoMoo69UlQytlazR2YqQYNkLJmj9XnJ_UMKE4sAg/exec';
+
+// ── Estado local de votos (para UI inmediata) ──
+const VD = {};
+const voted = {}; // qué ha votado este navegador
+
+// ── MURO: enviar respuesta ──
+async function post(id) {
+  const inp = document.getElementById(id + '-in');
+  const box = document.getElementById(id + '-posts');
+  const t = inp.value.trim();
+  if (!t) return;
+
+  // UI inmediata
+  addPostEl(box, t, true);
+  inp.value = ''; inp.focus();
+
+  // Enviar al Sheet
+  if (SCRIPT_URL !== 'PEGA_AQUI_TU_URL_DEL_APPS_SCRIPT') {
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'post', id, text: t })
+      });
+    } catch(e) { console.warn('Sheet no conectado', e); }
+  }
 }
-document.querySelectorAll('.wall-in').forEach(inp=>{
-  inp.addEventListener('keydown',e=>{if(e.key==='Enter')post(inp.id.replace('-in',''));});
+
+function addPostEl(box, text, isNew = false) {
+  const el = document.createElement('div');
+  el.className = 'wall-post' + (isNew ? ' new' : '');
+  el.textContent = text;
+  box.appendChild(el);
+  box.scrollTop = box.scrollHeight;
+}
+
+document.querySelectorAll('.wall-in').forEach(inp => {
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') post(inp.id.replace('-in', '')); });
 });
 
-const VD={};
-function vote(id,i){
-  if(!VD[id])VD[id]={};
-  const prev=VD[id].sel;
-  if(prev===i){VD[id][i]=Math.max(0,(VD[id][i]||0)-1);delete VD[id].sel;}
-  else{
-    if(prev!==undefined)VD[id][prev]=Math.max(0,(VD[id][prev]||0)-1);
-    VD[id][i]=(VD[id][i]||0)+1;VD[id].sel=i;
+// ── MURO: polling cada 8s para ver respuestas nuevas ──
+const lastPostCount = {};
+
+async function pollPosts(id) {
+  if (SCRIPT_URL === 'PEGA_AQUI_TU_URL_DEL_APPS_SCRIPT') return;
+  try {
+    const res = await fetch(`${SCRIPT_URL}?action=getPosts&id=${id}`);
+    const data = await res.json();
+    const box = document.getElementById(id + '-posts');
+    if (!box) return;
+    const prev = lastPostCount[id] || 0;
+    if (data.posts && data.posts.length > prev) {
+      // Solo añade los nuevos que no vengan de este navegador
+      data.posts.slice(prev).forEach(p => {
+        // Evita duplicar el que acaba de enviar este usuario (ya lo añadió UI)
+        const existing = Array.from(box.querySelectorAll('.wall-post')).map(el => el.textContent);
+        if (!existing.includes(p.text)) addPostEl(box, p.text);
+      });
+      lastPostCount[id] = data.posts.length;
+    }
+  } catch(e) {}
+}
+
+// ── VOTACIÓN: emitir voto ──
+async function vote(id, i) {
+  if (!VD[id]) VD[id] = {};
+  const prev = voted[id];
+
+  // Si ya votó esta opción, no hace nada (sin cambio de voto — más limpio en Sheet)
+  if (prev === i) return;
+
+  // Si tenía voto anterior, lo quita localmente
+  if (prev !== undefined) {
+    VD[id][prev] = Math.max(0, (VD[id][prev] || 0) - 1);
   }
-  const opts=document.getElementById(id).querySelectorAll('.vote-opt');
-  let tot=0;opts.forEach((_,j)=>tot+=(VD[id][j]||0));
-  opts.forEach((opt,j)=>{
-    const c=VD[id][j]||0;
-    opt.classList.toggle('sel',j===VD[id].sel);
-    opt.querySelector('.vo-fill').style.width=(tot>0?c/tot*100:0)+'%';
-    opt.querySelector('.vo-cnt').textContent=c+(c===1?' voto':' votos');
+
+  VD[id][i] = (VD[id][i] || 0) + 1;
+  voted[id] = i;
+
+  renderVotes(id);
+
+  // Enviar al Sheet
+  if (SCRIPT_URL !== 'PEGA_AQUI_TU_URL_DEL_APPS_SCRIPT') {
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'vote', id, option: i })
+      });
+    } catch(e) { console.warn('Sheet no conectado', e); }
+  }
+}
+
+function renderVotes(id) {
+  const opts = document.getElementById(id).querySelectorAll('.vote-opt');
+  let tot = 0;
+  opts.forEach((_, j) => tot += (VD[id][j] || 0));
+  opts.forEach((opt, j) => {
+    const c = VD[id][j] || 0;
+    const pct = tot > 0 ? (c / tot * 100).toFixed(0) : 0;
+    opt.classList.toggle('sel', j === voted[id]);
+    opt.querySelector('.vo-fill').style.width = pct + '%';
+    opt.querySelector('.vo-cnt').textContent = c + (c === 1 ? ' voto' : ' votos') + (tot > 0 ? ' · ' + pct + '%' : '');
   });
 }
+
+// ── VOTACIÓN: polling cada 6s para resultados en tiempo real ──
+async function pollVotes(id) {
+  if (SCRIPT_URL === 'PEGA_AQUI_TU_URL_DEL_APPS_SCRIPT') return;
+  try {
+    const res = await fetch(`${SCRIPT_URL}?action=getVotes&id=${id}`);
+    const data = await res.json();
+    if (!data.votes) return;
+    if (!VD[id]) VD[id] = {};
+    data.votes.forEach((v, j) => { VD[id][j] = v.count; });
+    renderVotes(id);
+  } catch(e) {}
+}
+
+// ── Iniciar polling para todas las secciones activas ──
+const WALL_IDS   = ['w1','w2','w3','w4','w5','w6','w7'];
+const VOTE_IDS   = ['v1','v2'];
+
+// Carga inicial
+window.addEventListener('load', () => {
+  WALL_IDS.forEach(id => { lastPostCount[id] = document.getElementById(id+'-posts')?.children.length || 0; });
+  VOTE_IDS.forEach(id => pollVotes(id));
+  WALL_IDS.forEach(id => pollPosts(id));
+
+  // Polling continuo
+  setInterval(() => { WALL_IDS.forEach(id => pollPosts(id)); }, 8000);
+  setInterval(() => { VOTE_IDS.forEach(id => pollVotes(id)); }, 6000);
+});
 </script>
 </body>
 </html>
